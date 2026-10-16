@@ -1,12 +1,34 @@
-# PHENOMENA · 28-hour phenomenology curriculum (source branch)
+# PHENOMENA — Extended Phenomenological Library (60–80-hour narration manuscript)
 
-**Content-only development — no APK built or requested.** This branch holds a compressed, reproducible Android project at `source/phenomena.tar.xz.base64`. The source archive expands into the 8-work, 127-lesson, 112-term curriculum and an improved seminar player. The unpacked source currently visible in the repository may reflect the earlier 15-lesson release until the content is merged and unpacked.
+**Editorial release — no APK built or generated.**
 
-**Curriculum:** 28 long-form modules, 280 semantic chapters, **218,734 authored spoken words**. At a modeled 130 words/minute the scripts total **28.04 hours** (31.70 hours at 115 wpm); real TTS timing varies. Material is original teaching commentary with explicit spiral rehearsal, not prerecorded MP3 files, verbatim copyrighted books or independently peer-reviewed lectures.
+This repository contains an offline-first, native Kotlin/Compose Android study companion and an independent browser preview. The original pedagogy covers foundational, realist, existential, social, embodied, ethical, late, and contemporary phenomenology.
 
-**No automatic APK build:** the workflow is manual-only in this branch. To inspect the source locally, decode the `source/phenomena.tar.xz.base64` file and unpack it with `tar -xJf`, or use the ZIP provided in the ChatGPT conversation. Run `python tools/validate_catalog.py && python tools/validate_seminars.py` on the unpacked project.
+## Current auditable content
 
+- **56 works**: primary texts, lectures, and important contemporary phenomenological scholarship (study-guide entries, **not complete bundled books**).
+- **355** conceptual study lessons using structured synopses, expositions, methodological scaffolding, argument steps, counterexamples and critical conversations.
+- **223** searchable, cross-referenced philosophical vocabulary entries with original-language labels where available.
+- **85** long-form seminar modules with **850** semantic chapters and **521,319 narratable script words**.
+- Estimated duration: **75.55 h at 115 wpm**, **69.51 h at 125 wpm**, **66.84 h at 130 wpm**. The actual TTS timing is device/voice-dependent. Length includes explicitly identified conceptual rehearsal, repeated examples and teaching exercises; it is not 70 hours of nonrepetitive scholarly lectures.
+- Native player includes semantic chapter skipping, automatic advancement, selectable local voices, manuscript navigation/search and optional import/share features. Audio is produced by the Android text-to-speech engine; no MP3 files are bundled.
 
-Native Android learning app for phenomenology.
+**The original complete primary works and licensed translations are not bundled.** The interpretive content is authored study material, not a primary-text quotation, scholarly critical edition or professionally recorded lecture series.
 
-The source archive and automated APK build configuration will be added shortly.
+## Documentation and verification
+
+- `docs/READING_PATHWAYS.md`: full 56-work bibliography and 85-module word-count table, intellectual pathways and editorial disclaimers.
+- `docs/SCHOLARLY_VERIFICATION.md`: bibliography verification resources, research limits and expert-review checklist.
+- `tools/expand_to_70h.py`: reproducible additive content authoring; idempotent on repeated runs.
+- `tools/create_reading_pathways.py`: regenerate indexes directly from packaged manuscript.
+- `tools/validate_catalog.py`, `tools/validate_seminars.py`, `tools/validate_70h_catalog.py`: structural, reference and duration checks.
+
+To validate **without** Android SDK or Gradle:
+
+```bash
+python3 tools/validate_catalog.py
+python3 tools/validate_seminars.py
+python3 tools/validate_70h_catalog.py
+```
+
+**APK build deliberately deferred.** The Android build workflow uses `workflow_dispatch` only. Do not run it or merge this editorial branch until you are ready for a separate compilation milestone.
