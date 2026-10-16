@@ -146,6 +146,7 @@ class StudyPlayer(private val context: Context) {
                     prefs.edit().remove("voice").apply()
                 }
                 speaker.setSpeechRate(speechRate)
+        speaker.setPitch(prefs.getFloat("pitch",1f).coerceIn(0.7f,1.3f))
                 speaker.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
                     override fun onStart(utteranceId: String?) {
                         main.post {
