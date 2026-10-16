@@ -17,6 +17,9 @@ import androidx.core.content.ContextCompat
 import com.phenomena.study.MainActivity
 import com.phenomena.study.data.Catalog
 import com.phenomena.study.data.InstituteMaterials
+import com.phenomena.study.learning.GuidedTranscript
+import com.phenomena.study.learning.UniversityPedagogy
+import com.phenomena.study.player.toSpeechChunks
 import com.phenomena.study.model.Beat
 import com.phenomena.study.player.speechSafeChapter
 import org.json.JSONArray
@@ -29,6 +32,7 @@ import java.util.Locale
 class SeminarPlaybackService : Service() {
     companion object {
         const val ACTION_PLAY = "com.phenomena.study.radio.PLAY"
+        const val ACTION_RADIO = "com.phenomena.study.radio.RADIO"
         const val ACTION_PAUSE = "com.phenomena.study.radio.PAUSE"
         const val ACTION_RESUME = "com.phenomena.study.radio.RESUME"
         const val ACTION_NEXT = "com.phenomena.study.radio.NEXT"
@@ -42,7 +46,7 @@ class SeminarPlaybackService : Service() {
         fun send(context: Context, action: String, modules: List<String> = emptyList()) {
             val request = Intent(context, SeminarPlaybackService::class.java).setAction(action)
             if (modules.isNotEmpty()) request.putStringArrayListExtra(EXTRA_MODULES, ArrayList(modules))
-            if (action == ACTION_PLAY || action == ACTION_RESUME) {
+            if (action == ACTION_PLAY || action == ACTION_RADIO || action == ACTION_RESUME) {
                 ContextCompat.startForegroundService(context, request)
             } else context.startService(request)
         }
@@ -68,6 +72,7 @@ class SeminarPlaybackService : Service() {
     private var modules: List<String> = emptyList()
     private var chapters: List<Chunk> = emptyList()
     private var playbackRate = 0.95f
+    private var radioMode = false
 
     override fun onCreate() {
         super.onCreate()
@@ -93,9 +98,20 @@ class SeminarPlaybackService : Service() {
     override fun onStartCommand(intent:Intent?,flags:Int,startId:Int):Int {
         when(intent?.action) {
             ACTION_PLAY -> {
+                radioMode=false
                 modules=intent.getStringArrayListExtra(EXTRA_MODULES)?.filter { it.isNotBlank() }
-                    ?.distinct()?.take(24).orEmpty().ifEmpty { readSavedModules() }
+                    ?.distinct()?.take(24).orEmpty()
                 if(modules.isEmpty()) { stopRadio(); return START_NOT_STICKY }
+                chapters=buildQueue(modules)
+                if(chapters.isEmpty()) { stopRadio(); return START_NOT_STICKY }
+                cursor=0
+                active=true;paused=false;save()
+                ensureForeground()
+                prepareTts()
+            }
+            ACTION_RADIO -> {
+                radioMode=true
+                modules=nextRandomMix()
                 chapters=buildQueue(modules)
                 if(chapters.isEmpty()) { stopRadio(); return START_NOT_STICKY }
                 cursor=0
@@ -124,6 +140,28 @@ class SeminarPlaybackService : Service() {
         val catalog=Catalog(applicationContext)
         val result=ArrayList<Chunk>()
         for(id in ids) {
+            if(id.startsWith("university:")) {
+                val lesson=catalog.lesson(id.removePrefix("university:")) ?: continue
+                val source=catalog.work(lesson.workId)?.shortTitle.orEmpty()
+                val segments=UniversityPedagogy.beats(lesson) { text->toSpeechChunks(text,2000) }
+                segments.forEachIndexed { index, section ->
+                    result.add(Chunk(id, "University · $source · ${lesson.title}",
+                        "${lesson.id}:university:${index+1}", section.title, section.content))
+                }
+                continue
+            }
+            if(id.startsWith("guided:")) {
+                val lesson=catalog.lesson(id.removePrefix("guided:")) ?: continue
+                val work=catalog.work(lesson.workId)?.shortTitle
+                    ?.ifBlank { catalog.work(lesson.workId)?.title ?: "PHENOMENA" }
+                    ?: "PHENOMENA"
+                val segments=GuidedTranscript.beats(lesson) { text -> toSpeechChunks(text,2000) }
+                segments.forEachIndexed { index, section ->
+                    result.add(Chunk(id, "$work · ${lesson.title}",
+                        "${lesson.id}:${index+1}", "Guided · ${section.title}", section.content))
+                }
+                continue
+            }
             val authored = InstituteMaterials.lectures.firstOrNull { it.id == id }
             if (authored != null) {
                 authored.paragraphs.forEachIndexed { index, paragraph ->
@@ -146,6 +184,27 @@ class SeminarPlaybackService : Service() {
         }
         return result
     }
+    /** Radio mixes guided study and long-form seminars. A rotating exclusion
+     * history avoids immediate repeats without loading the entire corpus as
+     * simultaneously active speech chunks. */
+    private fun nextRandomMix():List<String> {
+        val catalog=Catalog(applicationContext)
+        val candidates=(catalog.seminars.map { it.id } +
+            InstituteMaterials.lectures.map { it.id } +
+            catalog.lessons.map { "guided:${it.id}" } +
+            catalog.lessons.map { "university:${it.id}" }).distinct()
+        if(candidates.isEmpty()) return emptyList()
+        val recent=runCatching {
+            val array=JSONArray(prefs.getString("radio_history","[]"))
+            (0 until array.length()).map { array.getString(it) }
+        }.getOrDefault(emptyList())
+        val available=candidates.filterNot { it in recent }.ifEmpty { candidates }
+        val chosen=available.shuffled().take(24)
+        prefs.edit().putString("radio_history",
+            JSONArray((recent+chosen).takeLast(72)).toString()).apply()
+        return chosen
+    }
+
     private fun readSavedModules():List<String> {
         val json=prefs.getString("module_queue","[]") ?: "[]"
         return runCatching {
@@ -154,6 +213,7 @@ class SeminarPlaybackService : Service() {
         }.getOrDefault(emptyList())
     }
     private fun restore() {
+        radioMode=prefs.getBoolean("radio_enabled",false)
         modules=readSavedModules()
         chapters=buildQueue(modules)
         cursor=prefs.getInt("chunk",0).coerceIn(0,(chapters.size-1).coerceAtLeast(0))
@@ -161,7 +221,11 @@ class SeminarPlaybackService : Service() {
     private fun save() {
         prefs.edit().putString("module_queue",JSONArray(modules).toString())
             .putInt("chunk",cursor).putLong("saved_at",System.currentTimeMillis())
-            .putString("current_title",chapters.getOrNull(cursor)?.chapterTitle.orEmpty()).apply()
+            .putBoolean("radio_enabled",radioMode)
+            .putBoolean("running",active)
+            .putString("play_mode",if(radioMode) "RADIO" else "LONG")
+            .putString("current_title",chapters.getOrNull(cursor)?.chapterTitle.orEmpty())
+            .putString("current_module",chapters.getOrNull(cursor)?.moduleTitle.orEmpty()).apply()
         sendBroadcast(Intent(ACTION_STATUS).setPackage(packageName)
             .putExtra(EXTRA_CHUNK,cursor).putExtra("total",chapters.size)
             .putExtra("paused",paused))
@@ -202,7 +266,12 @@ class SeminarPlaybackService : Service() {
                     override fun onDone(utteranceId:String?) { handler.post {
                         if(generation==ttsGeneration && utteranceId==currentUtterance && active && !paused) {
                             currentUtterance=null;cursor++
-                            if(cursor>=chapters.size) stopRadio() else {save();speak()}
+                            if(cursor>=chapters.size && radioMode) {
+                                modules=nextRandomMix()
+                                chapters=buildQueue(modules)
+                                cursor=0
+                                if(chapters.isEmpty()) stopRadio() else {save();speak()}
+                            } else if(cursor>=chapters.size) stopRadio() else {save();speak()}
                         }
                     } }
                     @Deprecated("Deprecated in Java")
@@ -241,7 +310,9 @@ class SeminarPlaybackService : Service() {
     private fun advance(delta:Int) {
         if(chapters.isEmpty()) restore()
         if(chapters.isEmpty()) return
-        cursor=(cursor+delta).coerceIn(0,chapters.lastIndex)
+        if(delta>0 && radioMode && cursor==chapters.lastIndex) {
+            modules=nextRandomMix();chapters=buildQueue(modules);cursor=0
+        } else cursor=(cursor+delta).coerceIn(0,chapters.lastIndex)
         save()
         if(active && !paused) speak() else updateNotification()
     }

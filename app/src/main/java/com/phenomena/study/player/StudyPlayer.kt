@@ -273,19 +273,13 @@ class StudyPlayer(private val context: Context) {
 }
 
 fun toSpeechChunks(text: String, maxChunk: Int = 2500): List<Beat> {
-    val chunks = mutableListOf<String>()
-    val paragraphs = text.replace("\r", "").split(Regex("\n{2,}"))
-    var cur = ""
-    for (paragraph in paragraphs) {
-        for (part in paragraph.chunked(maxChunk)) {
-            if (cur.length + part.length > maxChunk && cur.isNotBlank()) {
-                chunks += cur.trim(); cur = ""
-            }
-            cur += part + "\n\n"
+    // Keep chapter boundaries within the Android TTS input limit without
+    // chopping ordinary words at arbitrary character offsets.
+    val safeLimit = maxChunk.coerceIn(300, 2800)
+    return speechSafeChapter(Beat("Reading passage", text, "Study reading"), safeLimit)
+        .mapIndexed { index, beat ->
+            beat.copy(title = "Passage ${index + 1}", kind = "Read-along")
         }
-    }
-    if (cur.isNotBlank()) chunks += cur.trim()
-    return chunks.mapIndexed { index, chunk -> Beat("Passage ${index + 1}", chunk, "Imported text") }
 }
 
 /** Break long seminar chapters into Android-safe, semantically navigable segments. */
