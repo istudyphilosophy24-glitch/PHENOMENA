@@ -175,6 +175,26 @@ class SeminarPlaybackService : Service() {
         val catalog=Catalog(applicationContext)
         val result=ArrayList<Chunk>()
         for(id in ids) {
+            if(id.startsWith("lab:")){
+                val protocol=InstituteMaterials.protocols.firstOrNull{
+                    it.id==id.removePrefix("lab:")
+                } ?:continue
+                val speech=listOf(
+                    "Begin the phenomenological research exercise: ${protocol.title}.",
+                    protocol.observation,
+                    "Second movement. Determine the conceptual distinction. ${protocol.distinction}",
+                    "Third movement. Consider the strongest counterexample. ${protocol.counterexample}",
+                    "Save your observations and arguments in the Laboratory notebook. Do not confuse a compelling description with an independently verified general law."
+                )
+                speech.forEachIndexed { i,spoken ->
+                    speechSafeChapter(Beat("Exercise ${i+1}",spoken,"RESEARCH LABORATORY"))
+                        .forEachIndexed { j,unit->
+                            result.add(Chunk(id,"Laboratory · ${protocol.title}",
+                                "${id}:${i+1}:${j+1}",unit.title,unit.content))
+                        }
+                }
+                continue
+            }
             val master=MasterclassesV4.all.firstOrNull{it.id==id}
             if(master!=null){
                 master.sections.forEachIndexed{n,section->
