@@ -5,6 +5,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import android.provider.Settings
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -53,6 +57,12 @@ fun AuditoryHomeV4(
     var minimal by rememberSaveable { mutableStateOf(uiPrefs.getBoolean("eyes_free",true)) }
     var preferReader by rememberSaveable { mutableStateOf(uiPrefs.getBoolean("reader_first",true)) }
     var settingsOpen by rememberSaveable { mutableStateOf(false) }
+    var notificationMessage by remember { mutableStateOf("") }
+    val notificationPermission=rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()) { granted ->
+        notificationMessage=if(granted) "" else
+            "Notification permission was declined; lock-screen media controls may be hidden."
+    }
     var transcriptOpen by rememberSaveable { mutableStateOf(false) }
     var chooserOpen by remember { mutableStateOf(false) }
     var chooseTerm by remember {mutableStateOf("")}
@@ -98,6 +108,13 @@ fun AuditoryHomeV4(
     fun send(action:String, ids:List<String> = emptyList(),minutes:Int = -1,
              bookmarkIndex:Int = -1,style:String = "",work:String = ""){
         player.stop()
+        if((action==SeminarPlaybackService.ACTION_PLAY ||
+            action==SeminarPlaybackService.ACTION_RADIO) &&
+            Build.VERSION.SDK_INT>=33 &&
+            ContextCompat.checkSelfPermission(context,Manifest.permission.POST_NOTIFICATIONS)!=
+                PackageManager.PERMISSION_GRANTED) {
+            notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
         SeminarPlaybackService.send(context,action,ids,minutes=minutes,
             bookmarkIndex=bookmarkIndex,style=style,topicWork=work)
         refreshPlayback()
@@ -374,6 +391,8 @@ fun AuditoryHomeV4(
                     Icon(Icons.Default.Stop,null)
                     Spacer(Modifier.width(7.dp));Text("Stop PHENOMENA audio")
                 }
+                if(notificationMessage.isNotBlank()) Text(notificationMessage,
+                    color=Brass,fontSize=11.sp,lineHeight=17.sp)
                 Text("The background player resumes from the saved TTS chunk, not an exact word.",
                     color=Muted,fontSize=11.sp,lineHeight=17.sp)
             }
