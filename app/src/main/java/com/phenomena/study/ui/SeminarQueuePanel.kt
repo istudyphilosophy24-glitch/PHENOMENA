@@ -23,18 +23,27 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import com.phenomena.study.model.Lesson
 import com.phenomena.study.data.Catalog
 import com.phenomena.study.service.SeminarPlaybackService
 
 /** Compact multi-module queue editor. Service owns the speech and survives the Activity. */
 @Composable
-fun SeminarQueuePanel(catalog: Catalog, onStart: () -> Unit = {}) {
+fun SeminarQueuePanel(catalog: Catalog, lesson: Lesson?, onStart: () -> Unit = {}) {
     val context=LocalContext.current
     val prefs=remember {context.getSharedPreferences("phenomena_radio_v2",Context.MODE_PRIVATE)}
     var expanded by remember { mutableStateOf(false) }
     var permissionMessage by remember { mutableStateOf("") }
     var search by remember { mutableStateOf("") }
-    val selected=remember { mutableStateListOf<String>() }
+    // A queue is scoped to the selected lesson's work, NEVER the first global seminar.
+    // Users may explicitly opt into other works through the editor.
+    val initialIds = remember(lesson?.workId, catalog.seminars) {
+        catalog.seminars.filter { it.workId == lesson?.workId }.map { it.id }.take(24)
+    }
+    val selected = remember(lesson?.workId) {
+        mutableStateListOf<String>().apply { addAll(initialIds) }
+    }
+    var includeOtherWorks by remember(lesson?.workId) { mutableStateOf(false) }
     val notificationPermission=rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         if(granted) {
             onStart()
@@ -55,12 +64,8 @@ fun SeminarQueuePanel(catalog: Catalog, onStart: () -> Unit = {}) {
             IntentFilter(SeminarPlaybackService.ACTION_STATUS), ContextCompat.RECEIVER_NOT_EXPORTED)
         onDispose { context.unregisterReceiver(receiver) }
     }
-    if(selected.isEmpty() && catalog.seminars.isNotEmpty()) {
-        // Initial selection only. Further selection changes are controlled by user.
-        LaunchedEffect(catalog.seminars.first().id) { if(selected.isEmpty()) selected.add(catalog.seminars.first().id) }
-    }
     Panel(Modifier.fillMaxWidth()) {
-        Eyebrow("THE GREAT SEMINAR 2.0")
+        Eyebrow("THE GREAT SEMINAR 3.0")
         Row(verticalAlignment=Alignment.CenterVertically) {
             Text("Background listening queue",Modifier.weight(1f),color=Ink,fontSize=17.sp)
             Icon(Icons.Default.Headphones,null,tint=Brass)
@@ -68,6 +73,7 @@ fun SeminarQueuePanel(catalog: Catalog, onStart: () -> Unit = {}) {
         val words = remember(catalog.seminars) { catalog.seminars.sumOf { it.spokenWords } }
         Text("${"%.1f".format(words / (125.0 * 60))} hours of TTS-ready scripts at 125 WPM · includes repeated exercises, not a verified count of unique lectures.",
             color = Brass, fontSize = 11.sp, lineHeight = 17.sp)
+        Text("Selected topic: ${lesson?.title ?: "None"} · Only matching work seminars are preselected.", color=Mint, fontSize=12.sp, lineHeight=18.sp)
         Text("Narration continues with the screen off. Module and chapter progress are saved locally; " +
             "resuming restarts the saved speech chunk rather than the exact word.",
             color=Muted,fontSize=11.sp,lineHeight=17.sp)
@@ -76,10 +82,14 @@ fun SeminarQueuePanel(catalog: Catalog, onStart: () -> Unit = {}) {
             Icon(if(expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,null)
         }
         if(expanded) {
+            Row(verticalAlignment=Alignment.CenterVertically) {
+                Checkbox(checked=includeOtherWorks,onCheckedChange={includeOtherWorks=it})
+                Text("Allow adding seminars from other works",color=Muted,fontSize=12.sp)
+            }
             OutlinedTextField(value=search,onValueChange={search=it},singleLine=true,
                 label={Text("Find a seminar")},modifier=Modifier.fillMaxWidth())
             val filtered=remember(search,catalog.seminars) {
-                catalog.seminars.filter { it.title.contains(search,true) || it.description.contains(search,true) }
+                catalog.seminars.filter { (includeOtherWorks || it.workId == lesson?.workId) && (it.title.contains(search,true) || it.description.contains(search,true)) }
             }
             LazyColumn(modifier=Modifier.fillMaxWidth().heightIn(max=300.dp),
                 verticalArrangement=Arrangement.spacedBy(4.dp)) {
@@ -97,7 +107,7 @@ fun SeminarQueuePanel(catalog: Catalog, onStart: () -> Unit = {}) {
                     }
                 }
             }
-            Text("Maximum 24 modules per queue; selections play in the order chosen.",
+            Text("Only the selected work is shown unless you enable cross-work selection. Maximum 24 modules per queue.",
                 color=Muted,fontSize=10.sp)
         }
         Button(onClick={
