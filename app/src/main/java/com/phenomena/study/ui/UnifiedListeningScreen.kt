@@ -272,8 +272,8 @@ fun UnifiedListeningScreen(
                                 }
                             }
                         }
-                        Button(onClick=startRadio(SeminarPlaybackService.ACTION_PLAY,
-                            modules.map{it.id}+authorPrograms.map{it.id}),
+                        Button(onClick={startRadio(SeminarPlaybackService.ACTION_PLAY,
+                            modules.map{it.id}+authorPrograms.map{it.id})},
                             modifier=Modifier.fillMaxWidth(),enabled=modules.isNotEmpty()||authorPrograms.isNotEmpty()) {
                             Icon(Icons.Default.PlayArrow,null)
                             Spacer(Modifier.width(8.dp));Text("Play complete work seminar")
@@ -289,7 +289,7 @@ fun UnifiedListeningScreen(
                     Body("Shuffle across the whole archive: long-form seminars, guided lessons, and newly authored Institute lectures. Radio picks a new random mix, plays complete source passages, then reshuffles at the end.",color=Muted)
                     Text("The currently selected study does not restrict Radio. Every excerpt remains labeled with its true source.",
                         color=Brass,fontSize=11.sp,lineHeight=18.sp)
-                    Button(onClick=startRadio(SeminarPlaybackService.ACTION_RADIO),
+                    Button(onClick={startRadio(SeminarPlaybackService.ACTION_RADIO)},
                         modifier=Modifier.fillMaxWidth()){
                         Icon(Icons.Default.Shuffle,null,Modifier.size(18.dp))
                         Spacer(Modifier.width(8.dp));Text("Start a new random station")
