@@ -111,9 +111,7 @@ fun ListenScreen(
         item {
             Panel(Modifier.fillMaxWidth()) {
                 Eyebrow("VOICE / PACE")
-                Row(horizontalArrangement = Arrangement.spacedBy(7.dp)) {
-                    listOf("British", "American").forEach { LabelTag(it, selected = player.accent == it) { player.setVoice(it) } }
-                }
+                NarratorSettingsPanel(player)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("Speaking rate", Modifier.weight(1f), fontSize = 12.sp)
                     Text("${"%.2f".format(player.speechRate)}×", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
@@ -123,7 +121,7 @@ fun ListenScreen(
                     Checkbox(checked = player.autoAdvance, onCheckedChange = { player.autoAdvance = it })
                     Text("Automatically advance to next semantic chapter", fontSize = 12.sp)
                 }
-                Text("Voices depend on those installed on your device; a British voice is not guaranteed.", fontSize = 11.sp, color = Muted)
+                Text("Playback uses your selected installed Android speech engine, with no lesson export required.", fontSize = 11.sp, color = Muted)
             }
         }
         item {
@@ -163,7 +161,7 @@ fun ListenScreen(
                     Icon(Icons.Default.Pause, null); Spacer(Modifier.width(8.dp)); Text("Pause imported recording")
                 }
                 OutlinedButton(onClick = { onShare(text) }, modifier = Modifier.fillMaxWidth()) {
-                    Icon(Icons.Default.IosShare, null); Spacer(Modifier.width(8.dp)); Text("Share text with ElevenReader / other readers")
+                    Icon(Icons.Default.IosShare, null); Spacer(Modifier.width(8.dp)); Text("Optional: share reading externally")
                 }
                 Text("This uses Android's sharing chooser. The target reading app must accept shared text; automatic ElevenReader playback cannot be guaranteed.",
                     fontSize = 11.sp, lineHeight = 17.sp, color = Muted)
