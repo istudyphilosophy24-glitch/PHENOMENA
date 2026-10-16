@@ -1,0 +1,51 @@
+name: Build PHENOMENA APK
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract Android project
+        run: |
+          base64 --decode source/phenomena.tar.xz.base64 > /tmp/phenomena.tar.xz
+          tar -xJf /tmp/phenomena.tar.xz
+      - name: Publish navigable Android source
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app build.gradle.kts settings.gradle.kts gradle.properties docs tools
+          if ! git diff --cached --quiet; then
+            git commit -m "Publish PHENOMENA Android project source [skip ci]"
+            git push || echo "Source push was not permitted; the project remains in its source archive."
+          fi
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+      - name: Install Android SDK 35
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - name: Validate lesson catalog
+        run: python3 tools/validate_catalog.py
+      - name: Compile debug APK
+        run: gradle --no-daemon --stacktrace :app:assembleDebug
+      - name: Upload APK as GitHub Actions artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PHENOMENA-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+      - name: Publish APK to GitHub Releases
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create v1.0.0 "app/build/outputs/apk/debug/app-debug.apk#PHENOMENA-1.0-debug.apk" --title "PHENOMENA 1.0 Android" --notes "Experimental PHENOMENA Android debug APK for personal testing." || gh release upload v1.0.0 "app/build/outputs/apk/debug/app-debug.apk#PHENOMENA-1.0-debug.apk" --clobber
