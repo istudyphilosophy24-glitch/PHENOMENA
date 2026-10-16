@@ -1,7 +1,6 @@
 name: Build PHENOMENA APK
 on:
-  push:
-    branches: [main]
+  # Manual-only by user request: never build APK on source/content pushes.
   workflow_dispatch:
 permissions:
   contents: write
