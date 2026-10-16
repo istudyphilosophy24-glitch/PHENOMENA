@@ -303,7 +303,7 @@ fun UnifiedListeningScreen(
                 Icon(Icons.Default.AudioFile,null)
                 Spacer(Modifier.width(8.dp));Text("Play your own audio recording")
             }
-            if(player.mediaPlaying) TextButton(onClick={player.toggleAudio}) {
+            if(player.mediaPlaying) TextButton(onClick={player.toggleAudio()}) {
                 Text("Pause / resume recording")
             }
             if(imported!=null) TextButton(onClick={onShare(imported.content)}) {
