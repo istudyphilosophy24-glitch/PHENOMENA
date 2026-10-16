@@ -1,5 +1,10 @@
 package com.phenomena.study.ui
 
+import android.Manifest
+import android.os.Build
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -27,8 +32,16 @@ fun SeminarQueuePanel(catalog: Catalog, onStart: () -> Unit = {}) {
     val context=LocalContext.current
     val prefs=remember {context.getSharedPreferences("phenomena_radio_v2",Context.MODE_PRIVATE)}
     var expanded by remember { mutableStateOf(false) }
+    var permissionMessage by remember { mutableStateOf("") }
     var search by remember { mutableStateOf("") }
     val selected=remember { mutableStateListOf<String>() }
+    val notificationPermission=rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if(granted) {
+            onStart()
+            SeminarPlaybackService.send(context,SeminarPlaybackService.ACTION_PLAY,selected.toList())
+            permissionMessage=""
+        } else permissionMessage="Enable notifications to display media controls while listening."
+    }
     var savedChapter by remember { mutableStateOf(prefs.getString("current_title","").orEmpty()) }
     var queueCursor by remember { mutableIntStateOf(prefs.getInt("chunk",0)) }
     DisposableEffect(context) {
@@ -88,13 +101,19 @@ fun SeminarQueuePanel(catalog: Catalog, onStart: () -> Unit = {}) {
                 color=Muted,fontSize=10.sp)
         }
         Button(onClick={
-            onStart()
-            SeminarPlaybackService.send(context,SeminarPlaybackService.ACTION_PLAY,selected.toList())
+            if(Build.VERSION.SDK_INT>=33 && ContextCompat.checkSelfPermission(
+                context,Manifest.permission.POST_NOTIFICATIONS)!=PackageManager.PERMISSION_GRANTED) {
+                notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+            } else {
+                onStart()
+                SeminarPlaybackService.send(context,SeminarPlaybackService.ACTION_PLAY,selected.toList())
+            }
             savedChapter="Starting narrated queue…"
         },enabled=selected.isNotEmpty(),modifier=Modifier.fillMaxWidth()) {
             Icon(Icons.Default.PlayArrow,null,modifier=Modifier.size(17.dp))
             Spacer(Modifier.width(7.dp));Text("Play selected seminars in background")
         }
+        if(permissionMessage.isNotBlank()) Text(permissionMessage,color=Muted,fontSize=11.sp)
         Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(7.dp)) {
             OutlinedButton(onClick={SeminarPlaybackService.send(context,SeminarPlaybackService.ACTION_RESUME)},modifier=Modifier.weight(1f)) {
                 Icon(Icons.Default.PlayArrow,null,modifier=Modifier.size(15.dp));Text("Resume",fontSize=11.sp)
