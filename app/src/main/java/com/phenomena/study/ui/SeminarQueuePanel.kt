@@ -52,6 +52,9 @@ fun SeminarQueuePanel(catalog: Catalog, onStart: () -> Unit = {}) {
             Text("Background listening queue",Modifier.weight(1f),color=Ink,fontSize=17.sp)
             Icon(Icons.Default.Headphones,null,tint=Brass)
         }
+        val words = remember(catalog.seminars) { catalog.seminars.sumOf { it.spokenWords } }
+        Text("${"%.1f".format(words / (125.0 * 60))} hours of TTS-ready scripts at 125 WPM · includes repeated exercises, not a verified count of unique lectures.",
+            color = Brass, fontSize = 11.sp, lineHeight = 17.sp)
         Text("Narration continues with the screen off. Module and chapter progress are saved locally; " +
             "resuming restarts the saved speech chunk rather than the exact word.",
             color=Muted,fontSize=11.sp,lineHeight=17.sp)
