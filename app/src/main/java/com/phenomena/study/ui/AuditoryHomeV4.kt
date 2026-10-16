@@ -67,7 +67,11 @@ fun AuditoryHomeV4(
     var bookmarks by remember {mutableStateOf(playbackPrefs.getString("audio_bookmarks_v4","[]").orEmpty())}
     val modules=remember(lesson.workId,catalog.seminars){catalog.seminars.filter{it.workId==lesson.workId}}
     val authored=remember(lesson.workId){InstituteMaterials.lecturesFor(lesson.workId)}
-    val selectedModule=modules.firstOrNull { it.id==selectedModuleId } ?:modules.firstOrNull()
+    val masterclasses=remember(lesson.workId){MasterclassesV4.forWork(lesson.workId)}
+    val chosenId=selectedModuleId ?:modules.firstOrNull()?.id ?:masterclasses.firstOrNull()?.id ?:authored.firstOrNull()?.id
+    val selectedModule=modules.firstOrNull { it.id==chosenId }
+    val selectedMaster=masterclasses.firstOrNull { it.id==chosenId }
+    val selectedAuthor=authored.firstOrNull { it.id==chosenId }
     val guidedText=remember(lesson.id){GuidedTranscript.transcript(lesson)}
     val universityText=remember(lesson.id){UniversityPedagogy.transcript(lesson)}
     val importedText=imported?.content
@@ -103,15 +107,15 @@ fun AuditoryHomeV4(
                 player.setSegments(toSpeechChunks(imported.content,2000))
                 player.autoAdvance=true;player.play() }
             "University" -> send(SeminarPlaybackService.ACTION_PLAY,listOf("university:${lesson.id}"))
-            "Long Format" -> if(selectedModule!=null)
-                send(SeminarPlaybackService.ACTION_PLAY,listOf(selectedModule.id))
+            "Long Format" -> if(chosenId!=null)
+                send(SeminarPlaybackService.ACTION_PLAY,listOf(chosenId))
             "Radio" -> send(SeminarPlaybackService.ACTION_RADIO,style=radioStyle,work=lesson.workId)
         }
     }
     fun shareInElevenReader(){
         val title=when(mode){
             "University" -> "PHENOMENA University · ${lesson.title}"
-            "Long Format" -> "PHENOMENA Seminar · ${selectedModule?.title ?: lesson.title}"
+            "Long Format" -> "PHENOMENA Seminar · ${selectedModule?.title ?: selectedMaster?.title ?: selectedAuthor?.title ?: lesson.title}"
             else -> imported?.title ?: "PHENOMENA Guided · ${lesson.title}"
         }
         val text=when(mode){
@@ -233,13 +237,15 @@ fun AuditoryHomeV4(
         if(mode=="Long Format"&&imported==null) item {
             Panel(Modifier.fillMaxWidth()){
                 Eyebrow("WORK-MATCHED SEMINAR SELECTION")
-                if(modules.isEmpty()&&authored.isEmpty())
+                if(modules.isEmpty()&&authored.isEmpty()&&masterclasses.isEmpty())
                     EmptyNotice("No indexed full seminar for this work. Guided and University remain available.")
                 else {
-                    val choices=modules.map { it.id to it.title } +authored.map { it.id to ("Authored · "+it.title) }
+                    val choices=modules.map { it.id to it.title } +
+                        masterclasses.map { it.id to ("V4 Masterclass · "+it.title) } +
+                        authored.map { it.id to ("Authored · "+it.title) }
                     choices.forEach { (id,title)->
                         Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically){
-                            RadioButton(selected=(selectedModuleId?:modules.firstOrNull()?.id)==id,
+                            RadioButton(selected=chosenId==id,
                                 onClick={selectedModuleId=id})
                             Text(title,color=Ink,fontSize=12.sp,lineHeight=18.sp,
                                 modifier=Modifier.weight(1f))
@@ -247,7 +253,7 @@ fun AuditoryHomeV4(
                     }
                     OutlinedButton(onClick={
                         send(SeminarPlaybackService.ACTION_PLAY,
-                            (modules.map{it.id}+authored.map{it.id}).take(24))
+                            (modules.map{it.id}+masterclasses.map{it.id}+authored.map{it.id}).take(24))
                     },modifier=Modifier.fillMaxWidth().heightIn(min=55.dp)){
                         Icon(Icons.Default.PlayArrow,null)
                         Spacer(Modifier.width(7.dp));Text("Play all seminars for this work")
@@ -307,7 +313,7 @@ fun AuditoryHomeV4(
                     if(preferReader&&mode!="Radio")shareInElevenReader()
                     else nativeStart()
                 },modifier=Modifier.fillMaxWidth().heightIn(min=70.dp),
-                    enabled=mode!="Long Format"||modules.isNotEmpty()||authored.isNotEmpty(),
+                    enabled=mode!="Long Format"||modules.isNotEmpty()||authored.isNotEmpty()||masterclasses.isNotEmpty(),
                     colors=ButtonDefaults.buttonColors(containerColor=Moss)){
                     Icon(if(mode=="Radio")Icons.Default.Shuffle else Icons.Default.PlayArrow,
                         null,Modifier.size(30.dp))
