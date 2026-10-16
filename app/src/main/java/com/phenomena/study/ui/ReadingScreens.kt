@@ -135,7 +135,7 @@ fun WorkDetailScreen(catalog: Catalog, workId: String, progress: List<LessonProg
         item { RowHeadline("Table of contents") }
         itemsIndexed(lessons) { index, lesson ->
             val finished = progress.any { it.lessonId == lesson.id && it.completed }
-            Surface(onClick = { onLesson(lesson.id) }, color = if (index % 2 == 0) Color.White.copy(alpha = .65f) else Cream,
+            Surface(onClick = { onLesson(lesson.id) }, color = if (index % 2 == 0) CardSurface else Cream,
                 shape = RoundedCornerShape(12.dp)) {
                 Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.spacedBy(13.dp),
                     verticalAlignment = Alignment.CenterVertically) {

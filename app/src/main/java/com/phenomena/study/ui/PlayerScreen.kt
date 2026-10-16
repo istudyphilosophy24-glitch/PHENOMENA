@@ -45,12 +45,12 @@ fun ListenScreen(
     LaunchedEffect(trackBeats) { player.setSegments(trackBeats) }
     LazyColumn(contentPadding = PaddingValues(horizontal = 20.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
         item {
-            Eyebrow("AN AUDIO-FIRST PHILOSOPHICAL SEMINAR")
-            Display("The study player", Modifier.padding(top = 7.dp), 33)
+            Eyebrow("THE LISTENING ROOM")
+            Display("Listen with intention.", Modifier.padding(top = 7.dp), 35)
             Body("Think through an argument with guided listening, commentary, and semantic navigation.", color = Muted)
         }
         item {
-            Surface(color = Moss, shape = RoundedCornerShape(18.dp)) {
+            Surface(color = Color(0xFF1C4948), shape = RoundedCornerShape(26.dp), border = BorderStroke(1.dp, Color(0xFF3A6862))) {
                 Column(Modifier.fillMaxWidth().padding(19.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                         Surface(color = Color(0xFF34584C), shape = RoundedCornerShape(8.dp), modifier = Modifier.size(width = 90.dp, height = 111.dp)) {
@@ -91,7 +91,7 @@ fun ListenScreen(
         }
         if (imported == null) item {
             Column(verticalArrangement = Arrangement.spacedBy(9.dp)) {
-                RowHeadline("Narration track")
+                RowHeadline("Choose your perspective")
                 Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(7.dp)) {
                     listOf("Synopsis", "Exposition", "Advanced", "Seminar", "Debate", "Guided").forEach { item ->
                         LabelTag(item, track == item) { track = item }
@@ -126,9 +126,9 @@ fun ListenScreen(
         }
         item {
             Column(verticalArrangement = Arrangement.spacedBy(11.dp)) {
-                RowHeadline("Semantic chapters", "${trackBeats.size} MARKERS")
+                RowHeadline("Chapter navigator", "${trackBeats.size} MARKERS")
                 trackBeats.forEachIndexed { i, beat ->
-                    Surface(onClick = { player.jumpTo(i) }, color = if (player.beatIndex == i) Cream else Color.White.copy(alpha = .67f),
+                    Surface(onClick = { player.jumpTo(i) }, color = if (player.beatIndex == i) Cream else CardSurface,
                         shape = RoundedCornerShape(12.dp)) {
                         Row(Modifier.fillMaxWidth().padding(13.dp), verticalAlignment = Alignment.CenterVertically) {
                             Text("${i + 1}".padStart(2, '0'), fontSize = 12.sp, color = Brass, fontWeight = FontWeight.Bold)

@@ -16,67 +16,95 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-val Paper = Color(0xFFF7F4ED)
-val Ink = Color(0xFF192923)
-val Moss = Color(0xFF284B43)
-val Brass = Color(0xFFB78A4C)
-val Muted = Color(0xFF68736B)
-val Cream = Color(0xFFEEE9DD)
-val Line = Color(0xFFDCD7CB)
+// PHENOMENA 1.3: nocturne editorial design system.
+// Raised surfaces deliberately remain dark; labels and affordances retain
+// their contrast even when Android is configured for light mode.
+val Paper = Color(0xFF0B1217)
+val CardSurface = Color(0xFF152128)
+val CardRaised = Color(0xFF1D2B31)
+val Ink = Color(0xFFEFF4F1)
+val Moss = Color(0xFF326F63)
+val Brass = Color(0xFFE6BB81)
+val Muted = Color(0xFFA0B0AF)
+val Cream = Color(0xFF203037)
+val Line = Color(0xFF2B4047)
+val Mint = Color(0xFF9AD5B9)
 
 @Composable
 fun PhenomenaTheme(content: @Composable () -> Unit) {
-    val scheme = lightColorScheme(primary = Moss, onPrimary = Color.White, background = Paper, onBackground = Ink,
-        surface = Paper, onSurface = Ink, surfaceContainer = Cream, outline = Line, secondary = Brass)
-    MaterialTheme(colorScheme = scheme, typography = Typography(), content = content)
+    val scheme = darkColorScheme(
+        primary = Mint, onPrimary = Paper,
+        secondary = Brass, onSecondary = Paper,
+        background = Paper, onBackground = Ink,
+        surface = CardSurface, onSurface = Ink,
+        surfaceVariant = Cream, onSurfaceVariant = Muted,
+        surfaceContainer = CardSurface,
+        outline = Line, outlineVariant = Line,
+        primaryContainer = Moss, onPrimaryContainer = Ink
+    )
+    val type = Typography(
+        bodyLarge = androidx.compose.ui.text.TextStyle(fontSize = 15.sp, lineHeight = 24.sp),
+        bodyMedium = androidx.compose.ui.text.TextStyle(fontSize = 13.sp, lineHeight = 20.sp),
+        titleLarge = androidx.compose.ui.text.TextStyle(fontSize = 23.sp, fontWeight = FontWeight.SemiBold),
+        titleMedium = androidx.compose.ui.text.TextStyle(fontSize = 16.sp, fontWeight = FontWeight.SemiBold),
+        labelLarge = androidx.compose.ui.text.TextStyle(fontWeight = FontWeight.SemiBold)
+    )
+    MaterialTheme(colorScheme = scheme, typography = type, shapes = Shapes(
+        small = RoundedCornerShape(12.dp),
+        medium = RoundedCornerShape(18.dp),
+        large = RoundedCornerShape(26.dp)
+    ), content = content)
 }
 
 @Composable
 fun Eyebrow(text: String, modifier: Modifier = Modifier) {
     Text(text.uppercase(), modifier, fontSize = 10.sp, fontWeight = FontWeight.SemiBold,
-        letterSpacing = 2.sp, color = Brass, lineHeight = 15.sp)
+        letterSpacing = 1.8.sp, color = Brass, lineHeight = 15.sp)
 }
 @Composable
 fun Display(text: String, modifier: Modifier = Modifier, size: Int = 30, color: Color = Ink) {
-    Text(text, modifier, fontFamily = FontFamily.Serif, fontSize = size.sp, lineHeight = (size + 5).sp,
+    Text(text, modifier, fontFamily = FontFamily.Serif, fontSize = size.sp, lineHeight = (size + 6).sp,
         fontWeight = FontWeight.Normal, color = color)
 }
 @Composable
 fun Body(text: String, modifier: Modifier = Modifier, color: Color = Ink) {
-    Text(text, modifier, fontSize = 14.sp, lineHeight = 23.sp, color = color)
+    Text(text, modifier, fontSize = 14.sp, lineHeight = 24.sp, color = color)
 }
 @Composable
 fun Rule() { HorizontalDivider(color = Line, thickness = 1.dp) }
 @Composable
 fun LabelTag(label: String, selected: Boolean = false, onClick: (() -> Unit)? = null) {
     Surface(modifier = if (onClick == null) Modifier else Modifier.clickable { onClick() },
-        color = if (selected) Moss else Cream, contentColor = if (selected) Color.White else Moss,
+        color = if (selected) Moss else Cream, contentColor = Ink,
+        border = BorderStroke(1.dp, if (selected) Mint.copy(alpha = .5f) else Line),
         shape = RoundedCornerShape(50.dp)) {
-        Text(label, Modifier.padding(horizontal = 12.dp, vertical = 7.dp), fontSize = 11.sp, fontWeight = FontWeight.Medium)
+        Text(label, Modifier.padding(horizontal = 13.dp, vertical = 9.dp), color = if (selected) Color.White else Muted,
+            fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
     }
 }
 @Composable
 fun PrimaryAction(text: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
-    Button(onClick, modifier, shape = RoundedCornerShape(10.dp), colors = ButtonDefaults.buttonColors(containerColor = Moss),
-        contentPadding = PaddingValues(horizontal = 18.dp, vertical = 12.dp)) { Text(text) }
+    Button(onClick, modifier, shape = RoundedCornerShape(15.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = Mint, contentColor = Paper),
+        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 13.dp)) { Text(text) }
 }
 @Composable
 fun Panel(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
-    Surface(modifier, color = Color.White.copy(alpha = 0.76f), shape = RoundedCornerShape(16.dp),
+    Surface(modifier, color = CardSurface, shape = RoundedCornerShape(23.dp),
         border = BorderStroke(1.dp, Line)) {
-        Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp), content = content)
+        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp), content = content)
     }
 }
 @Composable
 fun RowHeadline(title: String, trailing: String = "") {
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(title, fontFamily = FontFamily.Serif, fontSize = 23.sp, color = Ink)
-        if (trailing.isNotBlank()) Text(trailing, fontSize = 11.sp, color = Muted)
+        Text(title, fontFamily = FontFamily.Serif, fontSize = 24.sp, color = Ink)
+        if (trailing.isNotBlank()) Text(trailing, fontSize = 10.sp, color = Muted, letterSpacing = 1.sp)
     }
 }
 @Composable
 fun AccentTitle(text: String) {
-    Text(text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = Ink)
+    Text(text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = Ink, lineHeight = 23.sp)
 }
 @Composable
 fun EmptyNotice(text: String) {
