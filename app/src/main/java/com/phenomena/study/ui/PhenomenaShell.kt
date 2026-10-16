@@ -94,7 +94,9 @@ fun PhenomenaShell(
             }
         },
         bottomBar = {
-            Column {\n                HorizontalDivider(color = Line, thickness = 1.dp)\n                NavigationBar(containerColor = Paper, tonalElevation = 0.dp) {
+            Column {
+                HorizontalDivider(color = Line, thickness = 1.dp)
+                NavigationBar(containerColor = Paper, tonalElevation = 0.dp) {
                 val actions = listOf(
                     Triple("LIBRARY", "Library", Icons.Default.AutoStories),
                     Triple("LISTEN", "Player", Icons.Default.Headphones),
