@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.phenomena.study.model.Lesson
 import com.phenomena.study.data.InstituteMaterials
+import com.phenomena.study.data.SeminarTopicSelection
 import com.phenomena.study.data.Catalog
 import com.phenomena.study.service.SeminarPlaybackService
 
@@ -40,7 +41,7 @@ fun SeminarQueuePanel(catalog: Catalog, lesson: Lesson?, onStart: () -> Unit = {
     // Users may explicitly opt into other works through the editor.
     val authored = remember(lesson?.workId) { InstituteMaterials.lecturesFor(lesson?.workId.orEmpty()) }
     val initialIds = remember(lesson?.workId, catalog.seminars) {
-        catalog.seminars.filter { it.workId == lesson?.workId }.map { it.id }.take(24)
+        SeminarTopicSelection.initialIds(lesson?.workId, catalog.seminars.map { it.id to it.workId })
     }
     val selected = remember(lesson?.workId) {
         mutableStateListOf<String>().apply { addAll(initialIds) }
