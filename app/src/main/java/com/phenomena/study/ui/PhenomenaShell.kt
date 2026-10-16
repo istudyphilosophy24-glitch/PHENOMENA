@@ -69,26 +69,32 @@ fun PhenomenaShell(
         containerColor = Paper,
         topBar = {
             Column {
-                Row(Modifier.fillMaxWidth().padding(start = 20.dp, end = 14.dp, top = 13.dp, bottom = 10.dp),
+                Row(Modifier.fillMaxWidth().padding(start = 19.dp, end = 12.dp, top = 10.dp, bottom = 11.dp),
                     horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Surface(color = Moss, shape = androidx.compose.foundation.shape.RoundedCornerShape(9.dp)) {
-                            Icon(Icons.Default.AutoStories, null, Modifier.padding(8.dp), tint = Color.White)
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(11.dp)) {
+                        Surface(color = CardRaised, shape = androidx.compose.foundation.shape.RoundedCornerShape(13.dp),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, Line)) {
+                            Icon(Icons.Default.AutoStories, null, Modifier.padding(10.dp).size(20.dp), tint = Mint)
                         }
-                        Column {
+                        Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
                             Text("PHENOMENA", color = Ink, style = MaterialTheme.typography.titleMedium,
-                                fontWeight = androidx.compose.ui.text.font.FontWeight.Black, letterSpacing = 2.sp)
-                            Text("A LABORATORY OF APPEARING", fontSize = 8.5.sp, color = Muted,
-                                letterSpacing = 1.sp)
+                                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold, letterSpacing = 2.6.sp)
+                            Text("A PHILOSOPHICAL LISTENING SPACE", fontSize = 8.sp,
+                                color = Muted, letterSpacing = 1.1.sp)
                         }
                     }
-                    IconButton(onClick = { page = "NOTEBOOK" }) { Icon(Icons.Default.BookmarkBorder, "Open notebook", tint = Moss) }
+                    Surface(color = CardRaised, shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Line)) {
+                        IconButton(onClick = { page = "NOTEBOOK" }, modifier = Modifier.size(43.dp)) {
+                            Icon(Icons.Default.BookmarkBorder, "Open notebook", tint = Brass, modifier = Modifier.size(21.dp))
+                        }
+                    }
                 }
                 Rule()
             }
         },
         bottomBar = {
-            NavigationBar(containerColor = Paper, tonalElevation = 0.dp) {
+            Column {\n                HorizontalDivider(color = Line, thickness = 1.dp)\n                NavigationBar(containerColor = Paper, tonalElevation = 0.dp) {
                 val actions = listOf(
                     Triple("LIBRARY", "Library", Icons.Default.AutoStories),
                     Triple("LISTEN", "Player", Icons.Default.Headphones),
@@ -101,15 +107,16 @@ fun PhenomenaShell(
                         onClick = { if (id == "LISTEN") activeImport = null; page = id },
                         icon = { Icon(icon, label, modifier = Modifier.size(21.dp)) },
                         label = { Text(label, fontSize = 10.sp) },
-                        colors = NavigationBarItemDefaults.colors(selectedIconColor = Moss, selectedTextColor = Moss, indicatorColor = Cream, unselectedIconColor = Muted))
+                        colors = NavigationBarItemDefaults.colors(selectedIconColor = Mint, selectedTextColor = Mint, indicatorColor = Cream, unselectedIconColor = Muted))
                 }
+            }
             }
         },
         snackbarHost = { SnackbarHost(snackbar) }
     ) { inset ->
         Box(Modifier.fillMaxSize().padding(inset)) {
             when (page) {
-                "LIBRARY" -> LibraryScreen(catalog, progress,
+                "LIBRARY" -> ModernLibraryScreen(catalog, progress,
                     onWork = { activeWork = it; page = "DETAIL" }, onLesson = { goLesson(it) })
                 "DETAIL" -> WorkDetailScreen(catalog, activeWork, progress,
                     onBack = { page = "LIBRARY" }, onLesson = { goLesson(it) })
