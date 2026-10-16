@@ -65,6 +65,15 @@ class StudyPlayer(private val context: Context) {
         engines.clear()
         engines.add(SpeechEngineOption("", "Android system default"))
         engines.addAll(all)
+        // User-requested ElevenReader preference. Android cannot synthesize with
+        // private app voices unless the package publishes a system TTS service.
+        // Auto-select only when this *actual service* exists. Otherwise the
+        // existing Android engine remains the dependable offline fallback.
+        if (prefs.getString("engine", "").isNullOrBlank() && engineId.isBlank() &&
+            all.any { it.id == "io.elevenlabs.readerapp" }) {
+            engineId="io.elevenlabs.readerapp"
+            prefs.edit().putString("engine",engineId).apply()
+        }
         if (engineId.isNotBlank() && all.none { it.id == engineId }) {
             // Keep saved preference visible even when the package was disabled or uninstalled.
             engines.add(SpeechEngineOption(engineId, "Unavailable: $engineId"))
