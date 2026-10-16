@@ -35,7 +35,7 @@ jobs:
           python3 tools/patch_modern_player.py
           python3 tools/patch_v2_manifest.py
           python3 tools/patch_v2_screens.py
-          sed -i 's/versionName = "1.0.0"/versionName = "1.3.1"/' app/build.gradle.kts
+          sed -i 's/versionName = "1.0.0"/versionName = "2.0.0-alpha.1"/' app/build.gradle.kts
           sed -i 's/versionCode = 1/versionCode = 20/' app/build.gradle.kts
           test -s app/src/main/assets/seminars.json
           # Compilation compatibility fix until the source archive is regenerated.
@@ -68,14 +68,13 @@ jobs:
       - name: Upload installable debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: PHENOMENA-2.0-alpha1-CI-APK
+          name: PHENOMENA-2.0-alpha1-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
-      - name: Publish APK to GitHub Releases
-        if: github.ref == 'refs/heads/main'
-        continue-on-error: true
+      - name: Publish PHENOMENA 2.0 alpha APK
+        if: github.ref == 'refs/heads/feature/phenomena-2-foundation'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cp app/build/outputs/apk/debug/app-debug.apk PHENOMENA-1.3.1-FINAL.apk
-          gh release create v1.3.1-final PHENOMENA-1.3.1-FINAL.apk --title "PHENOMENA 1.3.1 FINAL · Nocturne Android" --notes "Refined premium dark editorial UI, searchable 56-work library, 70-hour phenomenology seminar curriculum, native Android TTS engine/voice selection, and stability fixes. Debug build for sideloading." || gh release upload v1.3.1-final PHENOMENA-1.3.1-FINAL.apk --clobber
+          cp app/build/outputs/apk/debug/app-debug.apk PHENOMENA-2.0-ALPHA.apk
+          gh release create v2.0.0-alpha.1 PHENOMENA-2.0-ALPHA.apk --target "$GITHUB_SHA" --title "PHENOMENA 2.0 Alpha · Great Seminar and Reader" --notes "Experimental Android debug APK. Includes the preserved ~70-hour phenomenology curriculum, Great Seminar 2.0 foreground service and chapter queue, paragraph-level Great Reader, Nocturne 2 foundations, and content audit. Compiled in GitHub Actions; not physically device-tested or a signed production release." --prerelease
