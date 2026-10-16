@@ -39,6 +39,7 @@ class SeminarPlaybackService : Service() {
         const val EXTRA_MINUTES = "sleep_minutes"
         const val EXTRA_BOOKMARK_INDEX = "bookmark_index"
         const val EXTRA_STYLE = "radio_style"
+        const val EXTRA_TOPIC_WORK = "topic_work_id"
         const val ACTION_PAUSE = "com.phenomena.study.radio.PAUSE"
         const val ACTION_RESUME = "com.phenomena.study.radio.RESUME"
         const val ACTION_NEXT = "com.phenomena.study.radio.NEXT"
@@ -50,12 +51,13 @@ class SeminarPlaybackService : Service() {
         private const val CHANNEL_ID = "phenomena_seminars_v2"
         private const val NOTIFY_ID = 2091
         fun send(context: Context, action: String, modules: List<String> = emptyList(),
-                 minutes: Int = -1, bookmarkIndex: Int = -1, style: String = "") {
+                 minutes: Int = -1, bookmarkIndex: Int = -1, style: String = "", topicWork: String = "") {
             val request = Intent(context, SeminarPlaybackService::class.java).setAction(action)
             if (modules.isNotEmpty()) request.putStringArrayListExtra(EXTRA_MODULES, ArrayList(modules))
             if(minutes>=0) request.putExtra(EXTRA_MINUTES,minutes)
             if(bookmarkIndex>=0) request.putExtra(EXTRA_BOOKMARK_INDEX,bookmarkIndex)
             if(style.isNotBlank()) request.putExtra(EXTRA_STYLE,style)
+            if(topicWork.isNotBlank()) request.putExtra(EXTRA_TOPIC_WORK,topicWork)
             if (action == ACTION_PLAY || action == ACTION_RADIO || action == ACTION_RESUME || action == ACTION_RESTORE_BOOKMARK) {
                 ContextCompat.startForegroundService(context, request)
             } else context.startService(request)
@@ -84,6 +86,7 @@ class SeminarPlaybackService : Service() {
     private var playbackRate = 0.95f
     private var radioMode = false
     private var radioStyle = "DISCOVERY"
+    private var thematicWorkId = ""
     private val sleeper=Runnable { if(active)stopRadio() }
 
     override fun onCreate() {
@@ -126,6 +129,7 @@ class SeminarPlaybackService : Service() {
                 radioStyle=intent.getStringExtra(EXTRA_STYLE)?.takeIf {
                     it=="DISCOVERY" || it=="THEMATIC" || it=="NOCTURNAL"
                 } ?: "DISCOVERY"
+                thematicWorkId=intent.getStringExtra(EXTRA_TOPIC_WORK).orEmpty()
                 modules=nextRandomMix()
                 chapters=buildQueue(modules)
                 if(chapters.isEmpty()) { stopRadio(); return START_NOT_STICKY }
@@ -227,7 +231,14 @@ class SeminarPlaybackService : Service() {
             (0 until array.length()).map { array.getString(it) }
         }.getOrDefault(emptyList())
         val pool=when(radioStyle) {
-            "THEMATIC" -> candidates.filter { it.startsWith("university:") || it.startsWith("guided:") }
+            "THEMATIC" -> candidates.filter { id ->
+                when {
+                    id.startsWith("university:") -> catalog.lesson(id.removePrefix("university:"))?.workId==thematicWorkId
+                    id.startsWith("guided:") -> catalog.lesson(id.removePrefix("guided:"))?.workId==thematicWorkId
+                    else -> catalog.seminar(id)?.workId==thematicWorkId ||
+                        InstituteMaterials.lectures.any { it.id==id && it.workId==thematicWorkId }
+                }
+            }
             "NOCTURNAL" -> candidates.filterNot { it.startsWith("guided:") }
             else -> candidates
         }.ifEmpty { candidates }
@@ -248,6 +259,7 @@ class SeminarPlaybackService : Service() {
     private fun restore() {
         radioMode=prefs.getBoolean("radio_enabled",false)
         radioStyle=prefs.getString("radio_style","DISCOVERY").orEmpty()
+        thematicWorkId=prefs.getString("radio_topic_work","").orEmpty()
         val deadline=prefs.getLong("sleep_until",0L)
         handler.removeCallbacks(sleeper)
         if(deadline>0L) {
@@ -264,6 +276,7 @@ class SeminarPlaybackService : Service() {
             .putInt("chunk",cursor).putLong("saved_at",System.currentTimeMillis())
             .putBoolean("radio_enabled",radioMode)
             .putString("radio_style",radioStyle)
+            .putString("radio_topic_work",thematicWorkId)
             .putBoolean("running",active)
             .putString("play_mode",if(radioMode) "RADIO" else "LONG")
             .putString("current_title",chapters.getOrNull(cursor)?.chapterTitle.orEmpty())
@@ -283,6 +296,7 @@ class SeminarPlaybackService : Service() {
             .put("program",current.moduleTitle)
             .put("modules",JSONArray(modules)).put("cursor",cursor)
             .put("radio",radioMode).put("style",radioStyle)
+            .put("topic",thematicWorkId)
             .put("time",System.currentTimeMillis())
         val updated=JSONArray().put(entry)
         for(i in 0 until minOf(history.length(),14))updated.put(history.optJSONObject(i))
@@ -298,6 +312,7 @@ class SeminarPlaybackService : Service() {
         if(ids.isEmpty())return
         radioMode=entry.optBoolean("radio",false)
         radioStyle=entry.optString("style","DISCOVERY")
+        thematicWorkId=entry.optString("topic","")
         modules=ids;chapters=buildQueue(modules)
         if(chapters.isEmpty())return
         cursor=entry.optInt("cursor",0).coerceIn(0,chapters.lastIndex)
