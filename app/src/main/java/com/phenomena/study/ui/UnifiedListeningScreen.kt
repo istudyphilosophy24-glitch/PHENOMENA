@@ -114,10 +114,10 @@ fun UnifiedListeningScreen(
     LazyColumn(Modifier.fillMaxSize(),contentPadding=PaddingValues(18.dp),
         verticalArrangement=Arrangement.spacedBy(17.dp)) {
         item {
-            Eyebrow("PHENOMENA · THE UNIFIED PLAYER")
+            Eyebrow("PHENOMENA 4.0 · THE GRAND PLAYER")
             Spacer(Modifier.height(5.dp))
-            Display("The listening room.",size=36)
-            Text("One place for guided study, long-form seminars, and unscripted radio.",
+            Display("Listen. Think. Discover.",size=34)
+            Text("Eyes-free philosophy: Guided, Long Format, Radio, and University.",
                 color=Muted,fontSize=12.sp,lineHeight=18.sp)
         }
         item {
@@ -304,7 +304,7 @@ fun UnifiedListeningScreen(
                 Panel(Modifier.fillMaxWidth()) {
                     Eyebrow("RADIO · RANDOMIZED PHILOSOPHICAL DISCOVERY")
                     Display("Let inquiry wander.",size=29)
-                    Body("Shuffle across the whole archive: long-form seminars, guided lessons, and newly authored Institute lectures. Radio picks a new random mix, plays complete source passages, then reshuffles at the end.",color=Muted)
+                    if(!eyesFree) Body("Radio shuffles complete programs across Guided, University, legacy seminars and original lectures. It labels each source and avoids recent repeats.",color=Muted)
                     Text("The currently selected study does not restrict Radio. Every excerpt remains labeled with its true source.",
                         color=Brass,fontSize=11.sp,lineHeight=18.sp)
                     Button(onClick={startRadio(SeminarPlaybackService.ACTION_RADIO)},
@@ -312,7 +312,7 @@ fun UnifiedListeningScreen(
                         Icon(Icons.Default.Shuffle,null,Modifier.size(18.dp))
                         Spacer(Modifier.width(8.dp));Text("Start a new random station")
                     }
-                    BackgroundTransport(currentTitle,currentModule,currentChunk,activeStatus,backgroundMode)
+                    AudioFirstTransport(currentTitle,currentModule,currentChunk,activeStatus,backgroundMode)
                 }
             }
             "University" -> item {
