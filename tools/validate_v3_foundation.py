@@ -42,6 +42,8 @@ assert 'SeminarTopicSelection.initialIds(lesson?.workId' in queue
 assert 'includeOtherWorks' in queue, 'cross-work opt-in required'
 assert 'InstituteMaterials.lectures' in service and 'InstituteMaterials.lectures' in queue
 assert '"INSTITUTE" -> InstituteScreen(' in shell
+assert 'current_lesson_id' in shell and 'studyPreferences.edit()' in shell
+assert 'mutableStateOf("bt05")' not in shell
 assert '"READER" -> GreatReaderScreen(' in shell
 assert '"ATLAS" -> AtlasScreen(' in shell
 assert '"LEXICON" -> LexiconScreen(' in shell
