@@ -89,6 +89,8 @@ class SeminarPlaybackService : Service() {
     private var radioStyle = "DISCOVERY"
     private var thematicWorkId = ""
     private val sleeper=Runnable { if(active)stopRadio() }
+    private var nextStage:Runnable?=null
+    private fun cancelStageDelay(){ nextStage?.let { handler.removeCallbacks(it) }; nextStage=null }
 
     override fun onCreate() {
         super.onCreate()
@@ -381,13 +383,31 @@ class SeminarPlaybackService : Service() {
                     override fun onStart(utteranceId:String?) {}
                     override fun onDone(utteranceId:String?) { handler.post {
                         if(generation==ttsGeneration && utteranceId==currentUtterance && active && !paused) {
+                            val finished=chapters.getOrNull(cursor)
                             currentUtterance=null;cursor++
                             if(cursor>=chapters.size && radioMode) {
                                 modules=nextRandomMix()
                                 chapters=buildQueue(modules)
                                 cursor=0
                                 if(chapters.isEmpty()) stopRadio() else {save();speak()}
-                            } else if(cursor>=chapters.size) stopRadio() else {save();speak()}
+                            } else if(cursor>=chapters.size) stopRadio() else {
+                                save()
+                                val next=chapters.getOrNull(cursor)
+                                val stageChange=finished?.moduleId?.startsWith("university:")==true &&
+                                    finished.chapterTitle.substringBefore(" · ") !=
+                                        next?.chapterTitle?.substringBefore(" · ")
+                                val delay=if(stageChange) prefs.getLong("socratic_pause_ms",0L)
+                                    .coerceIn(0L,15000L) else 0L
+                                if(delay>0L){
+                                    val expectedCursor=cursor
+                                    val task=Runnable {
+                                        nextStage=null
+                                        if(active && !paused && cursor==expectedCursor) speak()
+                                    }
+                                    nextStage=task
+                                    handler.postDelayed(task,delay)
+                                } else speak()
+                            }
                         }
                     } }
                     @Deprecated("Deprecated in Java")
@@ -403,6 +423,7 @@ class SeminarPlaybackService : Service() {
             else TextToSpeech(this,listener,requestedEngine)
     }
     private fun speak() {
+        cancelStageDelay()
         if(!active || paused || !speechReady) return
         val current=chapters.getOrNull(cursor) ?: run {stopRadio();return}
         if(!requestFocus()) {pauseRadio();return}
@@ -416,6 +437,7 @@ class SeminarPlaybackService : Service() {
         save();updateNotification()
     }
     private fun pauseRadio() {
+        cancelStageDelay()
         if(!active) return
         currentUtterance=null
         tts?.stop();paused=true
@@ -433,6 +455,7 @@ class SeminarPlaybackService : Service() {
         if(active && !paused) speak() else updateNotification()
     }
     private fun stopRadio() {
+        cancelStageDelay()
         handler.removeCallbacks(sleeper)
         prefs.edit().putLong("sleep_until",0L).apply()
         currentUtterance=null
@@ -490,6 +513,7 @@ class SeminarPlaybackService : Service() {
         session?.setPlaybackState(PlaybackState.Builder().setActions(actions).setState(state,0L,1f).build())
     }
     override fun onDestroy() {
+        cancelStageDelay()
         handler.removeCallbacks(sleeper)
         ttsGeneration++
         tts?.stop();tts?.shutdown();tts=null
