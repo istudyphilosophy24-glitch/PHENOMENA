@@ -51,17 +51,8 @@ replace(player,'Display("Listen with intention.", Modifier.padding(top = 7.dp), 
     'Display("The sound of inquiry.", Modifier.padding(top = 7.dp), 35)')
 
 shell=ui/'PhenomenaShell.kt'
-replace(shell,'Triple("READER", "Reader", Icons.Default.ChromeReaderMode),\n'
-    '                    Triple("LEXICON", "Lexicon", Icons.Default.MenuBook),',
-    'Triple("READER", "Reader", Icons.Default.ChromeReaderMode),\n'
-    '                    Triple("INSTITUTE", "Institute", Icons.Default.School),')
-# Some V2 versions use READER followed by ATLAS; handle the explicit anchor
-s=shell.read_text(encoding='utf8')
-if 'Triple("INSTITUTE", "Institute", Icons.Default.School)' not in s:
-    replace(shell,'Triple("READER", "Reader", Icons.Default.ChromeReaderMode),\n'
-        '                    Triple("ATLAS", "Atlas", Icons.Default.AccountTree),',
-        'Triple("READER", "Reader", Icons.Default.ChromeReaderMode),\n'
-        '                    Triple("INSTITUTE", "Institute", Icons.Default.School),')
+replace(shell,'Triple("LEXICON", "Lexicon", Icons.Default.MenuBook),',
+    'Triple("INSTITUTE", "Institute", Icons.Default.School),')
 replace(shell,'                "LEXICON" -> LexiconScreen(catalog, activeTerm, onSelect = { activeTerm = it })',
 '''                "INSTITUTE" -> InstituteScreen(lesson, catalog, imports, player,
                     onSaveNote = { title, body -> scope.launch {
