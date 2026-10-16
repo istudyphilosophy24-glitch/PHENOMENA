@@ -214,6 +214,20 @@ class SeminarPlaybackService : Service() {
                 }
             }
         }
+        if (radioMode) {
+            val announced=ArrayList<Chunk>()
+            var previousModule=""
+            for (item in result) {
+                if(item.moduleId!=previousModule) {
+                    previousModule=item.moduleId
+                    announced.add(Chunk(item.moduleId,item.moduleTitle,
+                        "announcement:${item.moduleId}","Now playing",
+                        "PHENOMENA Radio. Now playing: ${item.moduleTitle}. ${item.chapterTitle}."))
+                }
+                announced.add(item)
+            }
+            return announced
+        }
         return result
     }
     /** Radio mixes guided study and long-form seminars. A rotating exclusion
