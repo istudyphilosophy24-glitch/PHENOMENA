@@ -1,0 +1,34 @@
+name: Publish expanded curriculum (no APK)
+on:
+  push:
+    branches: [content/phenomenology-24h]
+    paths:
+      - source/phenomena.tar.xz.base64
+      - .github/workflows/publish-curriculum.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  publish-source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Unpack authored project and data (NO COMPILATION)
+        run: |
+          base64 --decode source/phenomena.tar.xz.base64 > /tmp/phenomena-source.tar.xz
+          tar -xJf /tmp/phenomena-source.tar.xz
+      - name: Validate expanded lessons and measured script duration
+        run: |
+          python3 tools/validate_catalog.py
+          python3 tools/validate_seminars.py
+      - name: Commit human-readable curriculum and source files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app docs tools preview README.md build.gradle.kts settings.gradle.kts gradle.properties .github/workflows/android.yml
+          if ! git diff --cached --quiet; then
+            git commit -m "Materialize expanded phenomenology curriculum [skip ci]"
+            git push origin HEAD:content/phenomenology-24h
+          fi
