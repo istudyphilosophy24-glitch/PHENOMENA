@@ -43,7 +43,13 @@ fun UnifiedListeningScreen(
     onChooseLesson:(String)->Unit,onAudioPick:()->Unit,onShare:(String)->Unit
 ) {
     val context= LocalContext.current
-    var mode by remember(lesson.id,imported?.id) { mutableStateOf("Guided") }
+    val listenPreferences=remember { context.getSharedPreferences("phenomena_unified_v31",Context.MODE_PRIVATE) }
+    var mode by remember(lesson.id,imported?.id) {
+        mutableStateOf(if(imported!=null) "Guided"
+            else listenPreferences.getString("last_mode","Guided").orEmpty().takeIf {
+                it=="Guided" || it=="Long" || it=="Radio"
+            } ?: "Guided")
+    }
     var showSettings by remember { mutableStateOf(false) }
     var showChooser by remember { mutableStateOf(false) }
     var search by remember { mutableStateOf("") }
@@ -150,7 +156,15 @@ fun UnifiedListeningScreen(
         item {
             Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
                 listOf("Guided","Long","Radio").forEach { option ->
-                    Surface(onClick={mode=option},modifier=Modifier.weight(1f),
+                    Surface(onClick={
+                        if(mode!=option) {
+                            player.stop()
+                            if(option=="Guided")
+                                SeminarPlaybackService.send(context,SeminarPlaybackService.ACTION_PAUSE)
+                            mode=option
+                            if(imported==null) listenPreferences.edit().putString("last_mode",option).apply()
+                        }
+                    },modifier=Modifier.weight(1f),
                         color=if(option==mode)Moss else CardSurface,
                         shape=RoundedCornerShape(16.dp),
                         border=BorderStroke(1.dp,if(option==mode)Mint else Line)) {
