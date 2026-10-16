@@ -1,7 +1,7 @@
 name: Build PHENOMENA 70h Android APK
 on:
   push:
-    branches: [main]
+    branches: [main, feature/sophia-narrator-picker]
   workflow_dispatch:
 permissions:
   contents: write
@@ -14,8 +14,14 @@ jobs:
       - name: Unpack 70-hour Android source
         run: |
           test -s source/PHENOMENA-70h-Android-Source.tar.xz.base64
+          # Keep the new native TTS engine controller and manifest over the archived edition.
+          cp app/src/main/java/com/phenomena/study/player/StudyPlayer.kt /tmp/phenomena-upgraded-player.kt
+          cp app/src/main/AndroidManifest.xml /tmp/phenomena-upgraded-manifest.xml
           base64 --decode source/PHENOMENA-70h-Android-Source.tar.xz.base64 > /tmp/phenomena-70h.tar.xz
           tar -xJf /tmp/phenomena-70h.tar.xz --strip-components=1
+          cp /tmp/phenomena-upgraded-player.kt app/src/main/java/com/phenomena/study/player/StudyPlayer.kt
+          cp /tmp/phenomena-upgraded-manifest.xml app/src/main/AndroidManifest.xml
+          python3 tools/patch_narrator_ui.py
           test -s app/src/main/assets/seminars.json
           # Compilation compatibility fix until the source archive is regenerated.
           sed -i 's/class Catalog(context: Context) {/class Catalog(private val context: Context) {/' app/src/main/java/com/phenomena/study/data/Catalog.kt
@@ -46,6 +52,7 @@ jobs:
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
       - name: Publish APK to GitHub Releases
+        if: github.ref == 'refs/heads/main'
         continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
