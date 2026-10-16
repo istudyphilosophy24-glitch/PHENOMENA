@@ -17,6 +17,8 @@ jobs:
           base64 --decode source/PHENOMENA-70h-Android-Source.tar.xz.base64 > /tmp/phenomena-70h.tar.xz
           tar -xJf /tmp/phenomena-70h.tar.xz --strip-components=1
           test -s app/src/main/assets/seminars.json
+          # Compilation compatibility fix until the source archive is regenerated.
+          sed -i 's/class Catalog(context: Context) {/class Catalog(private val context: Context) {/' app/src/main/java/com/phenomena/study/data/Catalog.kt
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
