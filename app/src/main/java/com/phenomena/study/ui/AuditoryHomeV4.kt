@@ -58,6 +58,8 @@ fun AuditoryHomeV4(
     var chooseTerm by remember {mutableStateOf("")}
     var selectedModuleId by remember(lesson.workId) { mutableStateOf<String?>(null) }
     var radioStyle by rememberSaveable { mutableStateOf(uiPrefs.getString("radio_style","DISCOVERY") ?: "DISCOVERY") }
+    var socraticPause by rememberSaveable {mutableFloatStateOf(
+        playbackPrefs.getLong("socratic_pause_ms",4000L).toFloat()/1000f) }
     var chapter by remember {mutableStateOf(playbackPrefs.getString("current_title","").orEmpty())}
     var program by remember {mutableStateOf(playbackPrefs.getString("current_module","").orEmpty())}
     var currentChunk by remember {mutableIntStateOf(playbackPrefs.getInt("chunk",0))}
@@ -288,6 +290,15 @@ fun AuditoryHomeV4(
                     color=Muted)
                 Text("All 355 study units can be heard here in their pedagogically rewritten sequence. The University tab provides the detailed curriculum.",
                     color=Mint,fontSize=11.sp,lineHeight=18.sp)
+                Eyebrow("SOCRATIC THINKING PAUSE")
+                Text("The University narrator pauses between major teaching movements to let you answer the question mentally. You can choose no pause.",
+                    color=Muted,fontSize=11.sp,lineHeight=18.sp)
+                Slider(value=socraticPause,onValueChange={
+                    socraticPause=it
+                    playbackPrefs.edit().putLong("socratic_pause_ms",(it*1000).toLong()).apply()
+                },valueRange=0f..15f,steps=2)
+                Text("Time to think: ${socraticPause.toInt()} seconds",
+                    color=Brass,fontSize=12.sp)
             }
         }
         if(mode=="Guided") item {
