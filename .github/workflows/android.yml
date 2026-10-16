@@ -1,7 +1,7 @@
 name: Build PHENOMENA 70h Android APK
 on:
   push:
-    branches: [main, feature/sophia-narrator-picker]
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: write
@@ -48,7 +48,7 @@ jobs:
       - name: Upload installable debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: PHENOMENA-70h-debug-APK
+          name: PHENOMENA-70h-native-narrator-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
       - name: Publish APK to GitHub Releases
@@ -57,4 +57,4 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create v1.1.0-70h "app/build/outputs/apk/debug/app-debug.apk#PHENOMENA-70h-debug.apk" --title "PHENOMENA 70h Android (Debug)" --notes "Experimental Android debug build with the expanded phenomenological curriculum and local TTS. Not a signed production release." || gh release upload v1.1.0-70h "app/build/outputs/apk/debug/app-debug.apk#PHENOMENA-70h-debug.apk" --clobber
+          gh release create v1.2.0-native-narrator "app/build/outputs/apk/debug/app-debug.apk#PHENOMENA-1.2-Native-Narrator-debug.apk" --title "PHENOMENA 1.2 — SOPHIA-style Native Narrator (Debug)" --notes "Native Android TTS engine/voice selection, saved narrator preferences and 70-hour phenomenological curriculum. Android system speech engines only; ElevenReader voices are not supported. Debug build, not production-signed." || gh release upload v1.2.0-native-narrator "app/build/outputs/apk/debug/app-debug.apk#PHENOMENA-1.2-Native-Narrator-debug.apk" --clobber
