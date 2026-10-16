@@ -63,7 +63,7 @@ fun LexiconScreen(catalog: Catalog, selectedId: String, onSelect: (String) -> Un
         }
         item { RowHeadline("Conceptual index", "${results.size} ENTRIES") }
         items(results) { term ->
-            Surface(onClick = { onSelect(term.id) }, color = if (selectedId == term.id) Cream else Color.White.copy(alpha = .7f),
+            Surface(onClick = { onSelect(term.id) }, color = if (selectedId == term.id) Cream else CardSurface,
                 shape = RoundedCornerShape(12.dp)) {
                 Row(Modifier.fillMaxWidth().padding(15.dp), verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -133,11 +133,11 @@ fun AtlasScreen(lesson: Lesson, catalog: Catalog, onPickLesson: (String) -> Unit
                             center = Offset(left + 21.dp.toPx(), y + 31.dp.toPx()))
                         drawIntoCanvas {
                             val p = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
-                            p.color = if (isSelected) android.graphics.Color.WHITE else android.graphics.Color.rgb(25, 41, 35)
+                            p.color = if (isSelected) android.graphics.Color.WHITE else android.graphics.Color.rgb(239, 244, 241)
                             p.textSize = 13.sp.toPx(); p.isFakeBoldText = true
                             it.nativeCanvas.drawText(node.title.take(30), left + 35.dp.toPx(), y + 28.dp.toPx(), p)
                             p.textSize = 10.sp.toPx(); p.isFakeBoldText = false
-                            p.color = if (isSelected) android.graphics.Color.LTGRAY else android.graphics.Color.DKGRAY
+                            p.color = if (isSelected) android.graphics.Color.LTGRAY else android.graphics.Color.LTGRAY
                             it.nativeCanvas.drawText(node.kind.uppercase(), left + 35.dp.toPx(), y + 46.dp.toPx(), p)
                         }
                     }
