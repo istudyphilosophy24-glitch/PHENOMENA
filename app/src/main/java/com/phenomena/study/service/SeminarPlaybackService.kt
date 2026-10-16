@@ -16,6 +16,7 @@ import android.speech.tts.UtteranceProgressListener
 import androidx.core.content.ContextCompat
 import com.phenomena.study.MainActivity
 import com.phenomena.study.data.Catalog
+import com.phenomena.study.data.InstituteMaterials
 import com.phenomena.study.model.Beat
 import com.phenomena.study.player.speechSafeChapter
 import org.json.JSONArray
@@ -75,7 +76,7 @@ class SeminarPlaybackService : Service() {
             channel.description="Background phenomenological seminar narration"
             (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(channel)
         }
-        session=MediaSession(this,"PHENOMENA-2-SeminarRadio").apply {
+        session=MediaSession(this,"PHENOMENA-3-InstituteRadio").apply {
             setCallback(object:MediaSession.Callback() {
                 override fun onPlay() { send(this@SeminarPlaybackService,ACTION_RESUME) }
                 override fun onPause() { send(this@SeminarPlaybackService,ACTION_PAUSE) }
@@ -123,6 +124,18 @@ class SeminarPlaybackService : Service() {
         val catalog=Catalog(applicationContext)
         val result=ArrayList<Chunk>()
         for(id in ids) {
+            val authored = InstituteMaterials.lectures.firstOrNull { it.id == id }
+            if (authored != null) {
+                authored.paragraphs.forEachIndexed { index, paragraph ->
+                    val sections = speechSafeChapter(Beat(
+                        "Part ${index+1}: ${authored.title}", paragraph, authored.type))
+                    sections.forEachIndexed { j, section ->
+                        result.add(Chunk(authored.id, authored.title,
+                            "${authored.id}:${index+1}:${j+1}", section.title, section.content))
+                    }
+                }
+                continue
+            }
             val module=catalog.seminar(id) ?: continue
             for(chapter in module.chapters) {
                 val sections=speechSafeChapter(Beat(chapter.title,chapter.text,chapter.kind))
