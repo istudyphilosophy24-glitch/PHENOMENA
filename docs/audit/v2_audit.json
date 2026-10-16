@@ -1,0 +1,38 @@
+{
+  "status": "computational_only_not_peer_reviewed",
+  "scope": {
+    "works": 56,
+    "lessons": 355,
+    "terms": 223,
+    "seminars": 85,
+    "chapters": 850
+  },
+  "narration": {
+    "script_words_total": 521319,
+    "hours_at_115_wpm": 75.55,
+    "hours_at_125_wpm": 69.51,
+    "hours_at_130_wpm": 66.84,
+    "prerecorded_audio_hours": 0,
+    "unique_lecture_hours_verified": null
+  },
+  "repetition": {
+    "sentences_analyzed_min_8_tokens": 33588,
+    "sentence_occurrences_repeated": 32198,
+    "repeated_sentence_occurrence_words": 473154,
+    "redundant_repeated_sentence_words_lower_bound": 440077,
+    "distinct_eight_token_shingles": 49982,
+    "total_eight_token_shingles": 515382,
+    "distinctive_shingle_ratio": 0.097
+  },
+  "references": {
+    "missing_lesson_source_notes": 0,
+    "lessons_pending_edition_check": 355,
+    "exact_pages_editorially_verified": 0
+  },
+  "limitations": [
+    "Estimates are script words divided by WPM, not measured synthesis time.",
+    "8-token novelty is an indicator, not a measure of unique philosophical arguments.",
+    "No source citations or historical claims were verified by this mechanical audit.",
+    "Licensed user imports remain locally stored and are not included in this report."
+  ]
+}
