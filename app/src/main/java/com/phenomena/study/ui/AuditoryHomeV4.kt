@@ -57,6 +57,8 @@ fun AuditoryHomeV4(
     var minimal by rememberSaveable { mutableStateOf(uiPrefs.getBoolean("eyes_free",true)) }
     var preferReader by rememberSaveable { mutableStateOf(uiPrefs.getBoolean("reader_first",true)) }
     var settingsOpen by rememberSaveable { mutableStateOf(false) }
+    val nativeVoicePrefs=remember {context.getSharedPreferences("phenomena_narrator_v12",Context.MODE_PRIVATE)}
+    var voiceRole by rememberSaveable {mutableStateOf(nativeVoicePrefs.getString("voice_role","PROFESSOR").orEmpty())}
     var notificationMessage by remember { mutableStateOf("") }
     val notificationPermission=rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()) { granted ->
@@ -462,6 +464,30 @@ fun AuditoryHomeV4(
                     Text(if(settingsOpen)"Hide native voice settings" else "Android TTS voice and speech rate")
                 }
                 if(settingsOpen){
+                    Eyebrow("OPTIONAL NATIVE ANDROID VOICE STYLES")
+                    Row(Modifier.horizontalScroll(rememberScrollState()),
+                        horizontalArrangement=Arrangement.spacedBy(7.dp)){
+                        listOf("PROFESSOR","DIALECTICIAN","NOCTURNAL").forEach { style ->
+                            LabelTag(style,voiceRole==style){
+                                voiceRole=style
+                                val rate=when(style){
+                                    "DIALECTICIAN"->1.04f
+                                    "NOCTURNAL"->.83f
+                                    else->.95f
+                                }
+                                val pitch=when(style){
+                                    "DIALECTICIAN"->1.04f
+                                    "NOCTURNAL"->.87f
+                                    else->.94f
+                                }
+                                nativeVoicePrefs.edit().putFloat("pitch",pitch)
+                                    .putString("voice_role",style).apply()
+                                player.setRate(rate)
+                            }
+                        }
+                    }
+                    Text("These styles adjust Android playback pace and pitch only. Select your ElevenReader proprietary voice within ElevenReader.",
+                        color=Muted,fontSize=11.sp,lineHeight=17.sp)
                     NarratorSettingsPanel(player)
                     Text("Rate: ${"%.2f".format(player.speechRate)}×",color=Muted,fontSize=11.sp)
                     Slider(value=player.speechRate,onValueChange=player::setRate,
