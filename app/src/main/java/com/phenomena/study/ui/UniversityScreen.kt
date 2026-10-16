@@ -26,6 +26,7 @@ import com.phenomena.study.model.Lesson
 import com.phenomena.study.player.StudyPlayer
 import com.phenomena.study.player.toSpeechChunks
 import com.phenomena.study.service.SeminarPlaybackService
+import com.phenomena.study.audio.ElevenReaderBridge
 
 /** A curriculum, not a second text dump: concepts are introduced from lived
  * examples and progressively reconstructed through twelve teaching movements.
@@ -163,15 +164,22 @@ fun UniversityScreen(
                     +"or reproduction of a licensed primary-book edition.",
                     color=Muted,fontSize=11.sp,lineHeight=17.sp)
                 Button(onClick={
-                    SeminarPlaybackService.send(
-                        context,
-                        SeminarPlaybackService.ACTION_STOP)
-                    val beats=UniversityPedagogy.beats(lesson) {t->toSpeechChunks(t,2000)}
-                    player.stop();player.setSegments(beats)
-                    player.autoAdvance=true;player.play()
-                },modifier=Modifier.fillMaxWidth()){
+                    player.stop()
+                    SeminarPlaybackService.send(context,SeminarPlaybackService.ACTION_PLAY,
+                        listOf("university:${lesson.id}"))
+                },modifier=Modifier.fillMaxWidth().heightIn(min=58.dp)){
                     Icon(Icons.Default.PlayArrow,null)
-                    Spacer(Modifier.width(7.dp));Text("Listen to full teaching lecture")
+                    Spacer(Modifier.width(7.dp));Text("Play full lecture in background")
+                }
+                OutlinedButton(onClick={
+                    player.stop()
+                    SeminarPlaybackService.send(context,SeminarPlaybackService.ACTION_STOP)
+                    ElevenReaderBridge.sendLecture(context,
+                        "PHENOMENA University · ${lesson.title}",
+                        UniversityPedagogy.transcript(lesson))
+                },modifier=Modifier.fillMaxWidth().heightIn(min=54.dp)){
+                    Icon(Icons.Default.OpenInNew,null)
+                    Spacer(Modifier.width(7.dp));Text("Open teaching lecture in ElevenReader")
                 }
                 Text(player.status,color=Muted,fontSize=11.sp)
                 if(player.speaking) Row(Modifier.fillMaxWidth(),

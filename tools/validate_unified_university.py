@@ -13,7 +13,8 @@ university=(ui/'UniversityScreen.kt').read_text()
 guided=(learning/'GuidedTranscript.kt').read_text()
 pedagogy=(learning/'UniversityPedagogy.kt').read_text()
 radio=service.read_text()
-assert '"LISTEN" -> UnifiedListeningScreen(' in shell
+assert ('"LISTEN" -> UnifiedListeningScreen(' in shell or
+        '"LISTEN" -> AuditoryHomeV4(' in shell)
 assert '"UNIVERSITY" -> UniversityScreen(' in shell
 assert 'Triple("UNIVERSITY", "University"' in shell
 assert all(f'"\"{mode}\""' not in [] for mode in ['Guided','Long','Radio'])
