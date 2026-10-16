@@ -163,24 +163,16 @@ fun UniversityScreen(
                     +"or reproduction of a licensed primary-book edition.",
                     color=Muted,fontSize=11.sp,lineHeight=17.sp)
                 Button(onClick={
-                    SeminarPlaybackService.send(
-                        context,
-                        SeminarPlaybackService.ACTION_STOP)
-                    val beats=UniversityPedagogy.beats(lesson) {t->toSpeechChunks(t,2000)}
-                    player.stop();player.setSegments(beats)
-                    player.autoAdvance=true;player.play()
-                },modifier=Modifier.fillMaxWidth()){
-                    Icon(Icons.Default.PlayArrow,null)
-                    Spacer(Modifier.width(7.dp));Text("Listen to full teaching lecture")
+                    player.stop()
+                    SeminarPlaybackService.send(context,SeminarPlaybackService.ACTION_PLAY,
+                        listOf("university:${lesson.id}"))
+                },modifier=Modifier.fillMaxWidth().heightIn(min=62.dp)){
+                    Icon(Icons.Default.PlayArrow,"Start complete University audio",Modifier.size(24.dp))
+                    Spacer(Modifier.width(7.dp));Text("Listen to full teaching lecture",fontSize=14.sp)
                 }
-                Text(player.status,color=Muted,fontSize=11.sp)
-                if(player.speaking) Row(Modifier.fillMaxWidth(),
-                    horizontalArrangement=Arrangement.SpaceBetween,
-                    verticalAlignment=Alignment.CenterVertically){
-                    Text("${player.beatIndex+1} / current narration chunks",
-                        color=Mint,fontSize=11.sp)
-                    TextButton(onClick={player.stop()}){Text("Stop lecture")}
-                }
+                Text("University uses the same background player as Radio and Guided. "
+                    +"Open the Grand Player for pause, resume, sleep timer and audio bookmarks.",
+                    color=Muted,fontSize=11.sp,lineHeight=17.sp)
                 OutlinedButton(onClick=onOpenPlayer,modifier=Modifier.fillMaxWidth()){
                     Text("Open unified listening room",modifier=Modifier.weight(1f))
                     Icon(Icons.Default.Headphones,null)
@@ -224,14 +216,16 @@ fun UniversityScreen(
                             }
                         }
                         OutlinedButton(onClick={
-                            val beats=toSpeechChunks(stage.transcript,maxChunk=2000)
-                            SeminarPlaybackService.send(
-                                context,
-                                SeminarPlaybackService.ACTION_STOP)
-                            player.stop();player.setSegments(beats);player.autoAdvance=true;player.play()
+                            // A single University stage is narrated locally as a preview,
+                            // but never alongside the service.
+                            SeminarPlaybackService.send(context,SeminarPlaybackService.ACTION_PAUSE)
+                            player.stop()
+                            player.setSegments(toSpeechChunks(stage.transcript,2000))
+                            player.autoAdvance=true
+                            player.play()
                         },modifier=Modifier.fillMaxWidth()){
                             Icon(Icons.Default.VolumeUp,null,Modifier.size(17.dp))
-                            Spacer(Modifier.width(6.dp));Text("Listen to this movement")
+                            Spacer(Modifier.width(6.dp));Text("Preview this movement")
                         }
                     } else {
                         Text(stage.instruction,color=Muted,fontSize=11.sp,
