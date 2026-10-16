@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
@@ -39,6 +40,7 @@ fun UniversityScreen(
     onOpenPlayer:()->Unit,
     onSaveNote:(String,String)->Unit
 ) {
+    val context=LocalContext.current
     var workId by rememberSaveable { mutableStateOf(currentLesson.workId) }
     var selectedId by rememberSaveable { mutableStateOf(currentLesson.id) }
     var coursePicker by remember { mutableStateOf(false) }
@@ -162,7 +164,7 @@ fun UniversityScreen(
                     color=Muted,fontSize=11.sp,lineHeight=17.sp)
                 Button(onClick={
                     SeminarPlaybackService.send(
-                        androidx.compose.ui.platform.LocalContext.current,
+                        context,
                         SeminarPlaybackService.ACTION_STOP)
                     val beats=UniversityPedagogy.beats(lesson) {t->toSpeechChunks(t,2000)}
                     player.stop();player.setSegments(beats)
@@ -224,7 +226,7 @@ fun UniversityScreen(
                         OutlinedButton(onClick={
                             val beats=toSpeechChunks(stage.transcript,maxChunk=2000)
                             SeminarPlaybackService.send(
-                                androidx.compose.ui.platform.LocalContext.current,
+                                context,
                                 SeminarPlaybackService.ACTION_STOP)
                             player.stop();player.setSegments(beats);player.autoAdvance=true;player.play()
                         },modifier=Modifier.fillMaxWidth()){
