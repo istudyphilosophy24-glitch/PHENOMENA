@@ -1,7 +1,7 @@
 name: Build PHENOMENA 1.3 Nocturne
 on:
   push:
-    branches: [main, release/modern-ui-1.3]
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: write
@@ -33,8 +33,8 @@ jobs:
           done
           python3 tools/patch_narrator_ui.py
           python3 tools/patch_modern_player.py
-          sed -i 's/versionName = "1.0.0"/versionName = "1.3.0"/' app/build.gradle.kts
-          sed -i 's/versionCode = 1/versionCode = 13/' app/build.gradle.kts
+          sed -i 's/versionName = "1.0.0"/versionName = "1.3.1"/' app/build.gradle.kts
+          sed -i 's/versionCode = 1/versionCode = 14/' app/build.gradle.kts
           test -s app/src/main/assets/seminars.json
           # Compilation compatibility fix until the source archive is regenerated.
           sed -i 's/class Catalog(context: Context) {/class Catalog(private val context: Context) {/' app/src/main/java/com/phenomena/study/data/Catalog.kt
@@ -64,7 +64,7 @@ jobs:
       - name: Upload installable debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: PHENOMENA-1.3-Nocturne-APK
+          name: PHENOMENA-1.3.1-FINAL-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
       - name: Publish APK to GitHub Releases
@@ -73,4 +73,5 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create v1.3.0-nocturne "app/build/outputs/apk/debug/app-debug.apk#PHENOMENA-1.3-Nocturne-debug.apk" --title "PHENOMENA 1.3 Nocturne · Modern Android UI" --notes "Refined premium dark editorial UI, searchable 56-work library, 70-hour phenomenology seminar curriculum, native Android TTS engine/voice selection, and stability fixes. Debug build for sideloading." || gh release upload v1.3.0-nocturne "app/build/outputs/apk/debug/app-debug.apk#PHENOMENA-1.3-Nocturne-debug.apk" --clobber
+          cp app/build/outputs/apk/debug/app-debug.apk PHENOMENA-1.3.1-FINAL.apk
+          gh release create v1.3.1-final PHENOMENA-1.3.1-FINAL.apk --title "PHENOMENA 1.3.1 FINAL · Nocturne Android" --notes "Refined premium dark editorial UI, searchable 56-work library, 70-hour phenomenology seminar curriculum, native Android TTS engine/voice selection, and stability fixes. Debug build for sideloading." || gh release upload v1.3.1-final PHENOMENA-1.3.1-FINAL.apk --clobber
