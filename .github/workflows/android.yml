@@ -67,9 +67,14 @@ jobs:
           python3 tools/validate_v3_foundation.py
           python3 tools/validate_unified_university.py
           python3 tools/validate_v4_audio.py
+          python3 tools/audit_v4_editorial.py
           grep -q 'ModernLibraryScreen' app/src/main/java/com/phenomena/study/ui/PhenomenaShell.kt
           grep -q 'NarratorSettingsPanel' app/src/main/java/com/phenomena/study/ui/PlayerScreen.kt
           grep -q 'seminars.json' app/src/main/java/com/phenomena/study/data/Catalog.kt
+      - name: Verify all new lecture IDs and category counts
+        run: |
+          grep -q 'MasterclassesV4.all' app/src/main/java/com/phenomena/study/service/SeminarPlaybackService.kt
+          grep -q 'reader_first' app/src/main/java/com/phenomena/study/ui/AuditoryHomeV4.kt
       - name: Compile PHENOMENA debug APK
         run: gradle --no-daemon --stacktrace :app:testDebugUnitTest :app:assembleDebug
       - name: Record APK SHA-256 provenance
@@ -77,6 +82,11 @@ jobs:
           cd app/build/outputs/apk/debug
           sha256sum app-debug.apk > SHA256SUMS
           cat SHA256SUMS
+      - name: Upload editorial audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: PHENOMENA-4.0-EDITORIAL-REPORT
+          path: docs/audit/PHENOMENA_V4_EDITORIAL.json
       - name: Upload CI debug APK (NOT A FINAL RELEASE)
         uses: actions/upload-artifact@v4
         with:
