@@ -1,7 +1,7 @@
-name: PHENOMENA 2.0 Alpha · Android Validation
+name: PHENOMENA 3.0 Institute · Development Validation
 on:
   push:
-    branches: [main, feature/phenomena-2-foundation]
+    branches: [feature/phenomena-3-institute]
   workflow_dispatch:
 permissions:
   contents: write
@@ -35,8 +35,9 @@ jobs:
           python3 tools/patch_modern_player.py
           python3 tools/patch_v2_manifest.py
           python3 tools/patch_v2_screens.py
-          sed -i 's/versionName = "1.0.0"/versionName = "2.0.0-alpha.1"/' app/build.gradle.kts
-          sed -i 's/versionCode = 1/versionCode = 20/' app/build.gradle.kts
+          python3 tools/patch_v3_screens.py
+          sed -i 's/versionName = "1.0.0"/versionName = "3.0.0-dev"/' app/build.gradle.kts
+          sed -i 's/versionCode = 1/versionCode = 30/' app/build.gradle.kts
           test -s app/src/main/assets/seminars.json
           # Compilation compatibility fix until the source archive is regenerated.
           sed -i 's/class Catalog(context: Context) {/class Catalog(private val context: Context) {/' app/src/main/java/com/phenomena/study/data/Catalog.kt
@@ -60,21 +61,22 @@ jobs:
           python3 tools/validate_70h_catalog.py
           python3 tools/audit_v2.py
           python3 tools/validate_v2_foundation.py
+          python3 tools/validate_v3_foundation.py
           grep -q 'ModernLibraryScreen' app/src/main/java/com/phenomena/study/ui/PhenomenaShell.kt
           grep -q 'NarratorSettingsPanel' app/src/main/java/com/phenomena/study/ui/PlayerScreen.kt
           grep -q 'seminars.json' app/src/main/java/com/phenomena/study/data/Catalog.kt
       - name: Compile PHENOMENA debug APK
         run: gradle --no-daemon --stacktrace :app:testDebugUnitTest :app:assembleDebug
-      - name: Upload installable debug APK
+      - name: Record APK SHA-256 provenance
+        run: |
+          cd app/build/outputs/apk/debug
+          sha256sum app-debug.apk > SHA256SUMS
+          cat SHA256SUMS
+      - name: Upload CI debug APK (NOT A FINAL RELEASE)
         uses: actions/upload-artifact@v4
         with:
-          name: PHENOMENA-2.0-alpha1-APK
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: PHENOMENA-3.0-development-CI-APK
+          path: |
+            app/build/outputs/apk/debug/app-debug.apk
+            app/build/outputs/apk/debug/SHA256SUMS
           if-no-files-found: error
-      - name: Publish PHENOMENA 2.0 alpha APK
-        if: github.ref == 'refs/heads/feature/phenomena-2-foundation'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          cp app/build/outputs/apk/debug/app-debug.apk PHENOMENA-2.0-ALPHA.apk
-          gh release create v2.0.0-alpha.1 PHENOMENA-2.0-ALPHA.apk --target "$GITHUB_SHA" --title "PHENOMENA 2.0 Alpha · Great Seminar and Reader" --notes "Experimental Android debug APK. Includes the preserved ~70-hour phenomenology curriculum, Great Seminar 2.0 foreground service and chapter queue, paragraph-level Great Reader, Nocturne 2 foundations, and content audit. Compiled in GitHub Actions; not physically device-tested or a signed production release." --prerelease

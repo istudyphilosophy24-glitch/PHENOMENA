@@ -23,18 +23,30 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import com.phenomena.study.model.Lesson
+import com.phenomena.study.data.InstituteMaterials
+import com.phenomena.study.data.SeminarTopicSelection
 import com.phenomena.study.data.Catalog
 import com.phenomena.study.service.SeminarPlaybackService
 
 /** Compact multi-module queue editor. Service owns the speech and survives the Activity. */
 @Composable
-fun SeminarQueuePanel(catalog: Catalog, onStart: () -> Unit = {}) {
+fun SeminarQueuePanel(catalog: Catalog, lesson: Lesson?, onStart: () -> Unit = {}) {
     val context=LocalContext.current
     val prefs=remember {context.getSharedPreferences("phenomena_radio_v2",Context.MODE_PRIVATE)}
     var expanded by remember { mutableStateOf(false) }
     var permissionMessage by remember { mutableStateOf("") }
     var search by remember { mutableStateOf("") }
-    val selected=remember { mutableStateListOf<String>() }
+    // A queue is scoped to the selected lesson's work, NEVER the first global seminar.
+    // Users may explicitly opt into other works through the editor.
+    val authored = remember(lesson?.workId) { InstituteMaterials.lecturesFor(lesson?.workId.orEmpty()) }
+    val initialIds = remember(lesson?.workId, catalog.seminars) {
+        SeminarTopicSelection.initialIds(lesson?.workId, catalog.seminars.map { it.id to it.workId })
+    }
+    val selected = remember(lesson?.workId) {
+        mutableStateListOf<String>().apply { addAll(initialIds) }
+    }
+    var includeOtherWorks by remember(lesson?.workId) { mutableStateOf(false) }
     val notificationPermission=rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         if(granted) {
             onStart()
@@ -55,12 +67,8 @@ fun SeminarQueuePanel(catalog: Catalog, onStart: () -> Unit = {}) {
             IntentFilter(SeminarPlaybackService.ACTION_STATUS), ContextCompat.RECEIVER_NOT_EXPORTED)
         onDispose { context.unregisterReceiver(receiver) }
     }
-    if(selected.isEmpty() && catalog.seminars.isNotEmpty()) {
-        // Initial selection only. Further selection changes are controlled by user.
-        LaunchedEffect(catalog.seminars.first().id) { if(selected.isEmpty()) selected.add(catalog.seminars.first().id) }
-    }
     Panel(Modifier.fillMaxWidth()) {
-        Eyebrow("THE GREAT SEMINAR 2.0")
+        Eyebrow("THE GREAT SEMINAR 3.0")
         Row(verticalAlignment=Alignment.CenterVertically) {
             Text("Background listening queue",Modifier.weight(1f),color=Ink,fontSize=17.sp)
             Icon(Icons.Default.Headphones,null,tint=Brass)
@@ -68,6 +76,7 @@ fun SeminarQueuePanel(catalog: Catalog, onStart: () -> Unit = {}) {
         val words = remember(catalog.seminars) { catalog.seminars.sumOf { it.spokenWords } }
         Text("${"%.1f".format(words / (125.0 * 60))} hours of TTS-ready scripts at 125 WPM · includes repeated exercises, not a verified count of unique lectures.",
             color = Brass, fontSize = 11.sp, lineHeight = 17.sp)
+        Text("Selected topic: ${lesson?.title ?: "None"} · ${authored.size} new authored programs available for this work.", color=Mint, fontSize=12.sp, lineHeight=18.sp)
         Text("Narration continues with the screen off. Module and chapter progress are saved locally; " +
             "resuming restarts the saved speech chunk rather than the exact word.",
             color=Muted,fontSize=11.sp,lineHeight=17.sp)
@@ -76,10 +85,24 @@ fun SeminarQueuePanel(catalog: Catalog, onStart: () -> Unit = {}) {
             Icon(if(expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,null)
         }
         if(expanded) {
+            Row(verticalAlignment=Alignment.CenterVertically) {
+                Checkbox(checked=includeOtherWorks,onCheckedChange={includeOtherWorks=it})
+                Text("Allow adding seminars from other works",color=Muted,fontSize=12.sp)
+            }
             OutlinedTextField(value=search,onValueChange={search=it},singleLine=true,
                 label={Text("Find a seminar")},modifier=Modifier.fillMaxWidth())
-            val filtered=remember(search,catalog.seminars) {
-                catalog.seminars.filter { it.title.contains(search,true) || it.description.contains(search,true) }
+            // Curated Institute lectures use IDs distinct from the 85 legacy modules.
+            // They enter the same persistable background queue only when selected.
+            data class Option(val id:String,val title:String,val subtitle:String,val chapterCount:Int,val words:Int)
+            val filtered = remember(search,includeOtherWorks,catalog.seminars,lesson?.workId) {
+                val legacy = catalog.seminars.filter { includeOtherWorks || it.workId == lesson?.workId }
+                    .map { Option(it.id,it.title,it.description,it.chapters.size,it.spokenWords) }
+                val institute = InstituteMaterials.lectures.filter {
+                    includeOtherWorks || it.workId == lesson?.workId
+                }.map { Option(it.id,"NEW · "+it.title,it.subtitle,it.paragraphs.size,it.words) }
+                (legacy+institute).filter {
+                    it.title.contains(search,true) || it.subtitle.contains(search,true)
+                }
             }
             LazyColumn(modifier=Modifier.fillMaxWidth().heightIn(max=300.dp),
                 verticalArrangement=Arrangement.spacedBy(4.dp)) {
@@ -91,13 +114,13 @@ fun SeminarQueuePanel(catalog: Catalog, onStart: () -> Unit = {}) {
                         })
                         Column(Modifier.weight(1f)) {
                             Text(item.title,color=Ink,fontSize=13.sp,maxLines=2,overflow=TextOverflow.Ellipsis)
-                            Text("${item.chapters.size} chapters · ${item.spokenWords/125} estimated min",
+                            Text("${item.chapterCount} chapters · ${item.words/125} estimated min",
                                 color=Muted,fontSize=10.sp)
                         }
                     }
                 }
             }
-            Text("Maximum 24 modules per queue; selections play in the order chosen.",
+            Text("Original 70-hour modules and new authored lectures are separate. Other works require an explicit opt-in. Maximum 24 selections.",
                 color=Muted,fontSize=10.sp)
         }
         Button(onClick={
