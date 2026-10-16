@@ -398,6 +398,7 @@ class SeminarPlaybackService : Service() {
                 val voiceId=narrationPrefs.getString("voice","").orEmpty()
                 speaker.voices?.firstOrNull { it.name==voiceId }?.let { speaker.voice=it }
                 speaker.setSpeechRate(playbackRate)
+                speaker.setPitch(narrationPrefs.getFloat("pitch",1f).coerceIn(0.7f,1.3f))
                 speaker.setAudioAttributes(audioAttrs)
                 speaker.setOnUtteranceProgressListener(object:UtteranceProgressListener() {
                     override fun onStart(utteranceId:String?) {}
