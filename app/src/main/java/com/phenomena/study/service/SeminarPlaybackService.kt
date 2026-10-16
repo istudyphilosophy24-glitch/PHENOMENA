@@ -33,6 +33,10 @@ class SeminarPlaybackService : Service() {
     companion object {
         const val ACTION_PLAY = "com.phenomena.study.radio.PLAY"
         const val ACTION_RADIO = "com.phenomena.study.radio.RADIO"
+        const val ACTION_SLEEP = "com.phenomena.study.radio.SLEEP"
+        const val ACTION_END_CHAPTER = "com.phenomena.study.radio.END_CHAPTER"
+        const val EXTRA_MINUTES = "sleep_minutes"
+        const val EXTRA_SEEK_CURSOR = "seek_chunk"
         const val ACTION_PAUSE = "com.phenomena.study.radio.PAUSE"
         const val ACTION_RESUME = "com.phenomena.study.radio.RESUME"
         const val ACTION_NEXT = "com.phenomena.study.radio.NEXT"
@@ -43,9 +47,12 @@ class SeminarPlaybackService : Service() {
         const val EXTRA_CHUNK = "chunk_index"
         private const val CHANNEL_ID = "phenomena_seminars_v2"
         private const val NOTIFY_ID = 2091
-        fun send(context: Context, action: String, modules: List<String> = emptyList()) {
+        fun send(context: Context, action: String, modules: List<String> = emptyList(),
+                 seekCursor: Int = -1, sleepMinutes: Int = 0) {
             val request = Intent(context, SeminarPlaybackService::class.java).setAction(action)
             if (modules.isNotEmpty()) request.putStringArrayListExtra(EXTRA_MODULES, ArrayList(modules))
+            if(seekCursor>=0) request.putExtra(EXTRA_SEEK_CURSOR,seekCursor)
+            if(sleepMinutes>0) request.putExtra(EXTRA_MINUTES,sleepMinutes)
             if (action == ACTION_PLAY || action == ACTION_RADIO || action == ACTION_RESUME) {
                 ContextCompat.startForegroundService(context, request)
             } else context.startService(request)
@@ -73,6 +80,8 @@ class SeminarPlaybackService : Service() {
     private var chapters: List<Chunk> = emptyList()
     private var playbackRate = 0.95f
     private var radioMode = false
+    private var endAtChapter = false
+    private var sleepAtMillis = 0L
 
     override fun onCreate() {
         super.onCreate()
@@ -81,7 +90,7 @@ class SeminarPlaybackService : Service() {
             channel.description="Background phenomenological seminar narration"
             (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(channel)
         }
-        session=MediaSession(this,"PHENOMENA-3-InstituteRadio").apply {
+        session=MediaSession(this,"PHENOMENA-4-GrandPlayer").apply {
             setCallback(object:MediaSession.Callback() {
                 override fun onPlay() { send(this@SeminarPlaybackService,ACTION_RESUME) }
                 override fun onPause() { send(this@SeminarPlaybackService,ACTION_PAUSE) }
@@ -104,7 +113,7 @@ class SeminarPlaybackService : Service() {
                 if(modules.isEmpty()) { stopRadio(); return START_NOT_STICKY }
                 chapters=buildQueue(modules)
                 if(chapters.isEmpty()) { stopRadio(); return START_NOT_STICKY }
-                cursor=0
+                cursor=intent.getIntExtra(EXTRA_SEEK_CURSOR,0).coerceIn(0,chapters.lastIndex)
                 active=true;paused=false;save()
                 ensureForeground()
                 prepareTts()
@@ -126,6 +135,18 @@ class SeminarPlaybackService : Service() {
                 ensureForeground()
                 if(speechReady) speak() else prepareTts()
             }
+            ACTION_SLEEP -> {
+                val minutes=intent.getIntExtra(EXTRA_MINUTES,0).coerceIn(1,180)
+                sleepAtMillis=System.currentTimeMillis()+minutes*60_000L
+                endAtChapter=false
+                prefs.edit().putLong("sleep_deadline",sleepAtMillis).putBoolean("sleep_end_chapter",false).apply()
+                scheduleSleep()
+            }
+            ACTION_END_CHAPTER -> {
+                endAtChapter=true
+                sleepAtMillis=0
+                prefs.edit().putBoolean("sleep_end_chapter",true).remove("sleep_deadline").apply()
+            }
             ACTION_PAUSE -> pauseRadio()
             ACTION_NEXT -> advance(1)
             ACTION_PREVIOUS -> advance(-1)
@@ -134,6 +155,16 @@ class SeminarPlaybackService : Service() {
         }
         updateNotification()
         return if(active) START_STICKY else START_NOT_STICKY
+    }
+
+    private fun scheduleSleep() {
+        val deadline=sleepAtMillis
+        if(deadline<=0L)return
+        val remaining=deadline-System.currentTimeMillis()
+        if(remaining<=0) { if(active) stopRadio();return }
+        handler.postDelayed({
+            if(sleepAtMillis==deadline && active) stopRadio()
+        },remaining)
     }
 
     private fun buildQueue(ids:List<String>):List<Chunk> {
@@ -214,6 +245,9 @@ class SeminarPlaybackService : Service() {
     }
     private fun restore() {
         radioMode=prefs.getBoolean("radio_enabled",false)
+        sleepAtMillis=prefs.getLong("sleep_deadline",0)
+        endAtChapter=prefs.getBoolean("sleep_end_chapter",false)
+        scheduleSleep()
         modules=readSavedModules()
         chapters=buildQueue(modules)
         cursor=prefs.getInt("chunk",0).coerceIn(0,(chapters.size-1).coerceAtLeast(0))
@@ -225,7 +259,9 @@ class SeminarPlaybackService : Service() {
             .putBoolean("running",active)
             .putString("play_mode",if(radioMode) "RADIO" else "LONG")
             .putString("current_title",chapters.getOrNull(cursor)?.chapterTitle.orEmpty())
-            .putString("current_module",chapters.getOrNull(cursor)?.moduleTitle.orEmpty()).apply()
+            .putString("current_module",chapters.getOrNull(cursor)?.moduleTitle.orEmpty())
+            .putString("current_module_id",chapters.getOrNull(cursor)?.moduleId.orEmpty())
+            .putString("current_chapter_id",chapters.getOrNull(cursor)?.chapterId.orEmpty()).apply()
         sendBroadcast(Intent(ACTION_STATUS).setPackage(packageName)
             .putExtra(EXTRA_CHUNK,cursor).putExtra("total",chapters.size)
             .putExtra("paused",paused))
@@ -266,6 +302,8 @@ class SeminarPlaybackService : Service() {
                     override fun onDone(utteranceId:String?) { handler.post {
                         if(generation==ttsGeneration && utteranceId==currentUtterance && active && !paused) {
                             currentUtterance=null;cursor++
+                            if(endAtChapter) {stopRadio();return@post}
+                            if(sleepAtMillis>0 && System.currentTimeMillis()>=sleepAtMillis) {stopRadio();return@post}
                             if(cursor>=chapters.size && radioMode) {
                                 modules=nextRandomMix()
                                 chapters=buildQueue(modules)
@@ -288,6 +326,7 @@ class SeminarPlaybackService : Service() {
     }
     private fun speak() {
         if(!active || paused || !speechReady) return
+        if(sleepAtMillis>0 && System.currentTimeMillis()>=sleepAtMillis) {stopRadio();return}
         val current=chapters.getOrNull(cursor) ?: run {stopRadio();return}
         if(!requestFocus()) {pauseRadio();return}
         val speaker=tts ?: return
@@ -319,6 +358,8 @@ class SeminarPlaybackService : Service() {
     private fun stopRadio() {
         currentUtterance=null
         active=false;paused=false;speechReady=false;ttsGeneration++
+        endAtChapter=false;sleepAtMillis=0
+        prefs.edit().remove("sleep_deadline").remove("sleep_end_chapter").apply()
         tts?.stop();tts?.shutdown();tts=null
         audioFocus?.let {audio.abandonAudioFocusRequest(it)};audioFocus=null
         save();updateSession()
