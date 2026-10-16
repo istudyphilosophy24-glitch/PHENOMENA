@@ -51,6 +51,31 @@ replace(player,'Display("Listen with intention.", Modifier.padding(top = 7.dp), 
     'Display("The sound of inquiry.", Modifier.padding(top = 7.dp), 35)')
 
 shell=ui/'PhenomenaShell.kt'
+# Persist the user's actual selected lesson; never silently return to bt05 after
+# process death. This also keeps the work and lesson fields internally coherent.
+replace(shell,'    var activeWork by remember { mutableStateOf("heidegger") }\n'
+    '    var activeLesson by remember { mutableStateOf("bt05") }',
+    '''    val studyPreferences=remember { context.getSharedPreferences("phenomena_study_v3",0) }
+    val initialLessonId=remember(catalog.lessons) {
+        studyPreferences.getString("current_lesson_id",null)
+            ?.takeIf { catalog.lesson(it)!=null }
+            ?: catalog.lessons.first().id
+    }
+    var activeLesson by remember { mutableStateOf(initialLessonId) }
+    var activeWork by remember { mutableStateOf(catalog.lesson(initialLessonId)?.workId
+        ?: catalog.works.first().id) }''')
+replace(shell,'        activeLesson = l.id\n        activeWork = l.workId',
+    '        activeLesson = l.id\n        activeWork = l.workId\n'
+    '        studyPreferences.edit().putString("current_lesson_id",l.id).apply()')
+replace(shell,
+    '                "ATLAS" -> AtlasScreen(lesson, catalog, onPickLesson = { activeLesson = it })',
+    '''                "ATLAS" -> AtlasScreen(lesson, catalog, onPickLesson = { id ->
+                    catalog.lesson(id)?.let { picked ->
+                        activeLesson=picked.id
+                        activeWork=picked.workId
+                        studyPreferences.edit().putString("current_lesson_id",picked.id).apply()
+                    }
+                })''')
 replace(shell,'Triple("LEXICON", "Lexicon", Icons.Default.MenuBook),',
     'Triple("INSTITUTE", "Institute", Icons.Default.School),')
 replace(shell,'                "LEXICON" -> LexiconScreen(catalog, activeTerm, onSelect = { activeTerm = it })',
@@ -77,5 +102,6 @@ assert '"Long seminar"' not in p and 'selectedSeminar' not in p
 assert 'SeminarQueuePanel(catalog, lesson' in p
 s=shell.read_text()
 assert '"INSTITUTE" -> InstituteScreen(' in s
+assert 'current_lesson_id' in s
 assert '"ATLAS" -> AtlasScreen(' in s and '"LEXICON" -> LexiconScreen(' in s
 print('V3 UI routed: current-study topic fix, scoped seminar queue, Nocturne III, Institute.')
