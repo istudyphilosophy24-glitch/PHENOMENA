@@ -152,6 +152,7 @@ private fun GreatCommentaryPanel(
 private fun InstituteSeminarPanel(
     lesson:Lesson,catalog:Catalog,player:StudyPlayer,onOpenListener:()->Unit
 ) {
+    val instituteContext=LocalContext.current
     val lectures=remember(lesson.workId) {InstituteMaterials.lecturesFor(lesson.workId)}
     val modules=remember(lesson.workId,catalog.seminars) {catalog.seminars.filter{it.workId==lesson.workId}}
     Panel(Modifier.fillMaxWidth()) {
@@ -175,9 +176,9 @@ private fun InstituteSeminarPanel(
                         color=Mint,fontSize=11.sp)
                     Text(lecture.reference,color=Muted,fontSize=10.sp,lineHeight=16.sp)
                     Button(onClick={
-                        val chunks=lecture.paragraphs.flatMap { toSpeechChunks(it,2100) }
-                        player.setSegments(chunks)
-                        player.play()
+                        player.stop()
+                        SeminarPlaybackService.send(instituteContext,
+                            SeminarPlaybackService.ACTION_PLAY,listOf(lecture.id))
                     },modifier=Modifier.fillMaxWidth()) {
                         Icon(Icons.Default.PlayArrow,null)
                         Text("Listen to authored ${lecture.type.lowercase()}")
