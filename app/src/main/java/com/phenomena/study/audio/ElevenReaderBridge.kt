@@ -43,7 +43,7 @@ object ElevenReaderBridge {
             val path=File(dir,"phenomena_$name.txt")
             // The exported document is educational commentary, not a licensed
             // translation unless imported independently by the user.
-            path.writeText("$title\nPHENOMENA — educational listening transcript\n\n$transcript","UTF-8")
+            path.writeText("$title\nPHENOMENA — educational listening transcript\n\n$transcript",Charsets.UTF_8)
             val uri=FileProvider.getUriForFile(context,
                 "${context.packageName}.shared",path)
             val request=Intent(Intent.ACTION_SEND).apply {
