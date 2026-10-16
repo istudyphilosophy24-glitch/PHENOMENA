@@ -1,5 +1,12 @@
 package com.phenomena.study.ui
 
+import android.app.Activity
+import android.content.Intent
+import android.speech.RecognizerIntent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import com.phenomena.study.service.SeminarPlaybackService
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
@@ -295,10 +302,40 @@ private fun PhenomenologicalLaboratory(lesson:Lesson,onSaveNote:(String,String)-
     var description by rememberSaveable(chosen) { mutableStateOf("") }
     var analysis by rememberSaveable(chosen) { mutableStateOf("") }
     var objection by rememberSaveable(chosen) { mutableStateOf("") }
+    val context=LocalContext.current
+    var dictationTarget by remember { mutableStateOf("description") }
+    var voiceMessage by remember { mutableStateOf("") }
+    val speechInput=rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if(result.resultCode==Activity.RESULT_OK) {
+            val words=result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull().orEmpty()
+            if(words.isNotBlank()) when(dictationTarget) {
+                "analysis" -> analysis=(analysis+" "+words).trim()
+                "objection" -> objection=(objection+" "+words).trim()
+                else -> description=(description+" "+words).trim()
+            }
+        }
+    }
+    fun dictate(target:String) {
+        dictationTarget=target
+        val intent=Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            putExtra(RecognizerIntent.EXTRA_PROMPT,"Dictate your philosophical observation")
+        }
+        try { speechInput.launch(intent) }
+        catch (_:Exception) { voiceMessage="No compatible speech recognition service is available." }
+    }
     Panel(Modifier.fillMaxWidth()) {
         Eyebrow("THE PHENOMENOLOGICAL LABORATORY")
         Display("Describe before you explain.",size=25)
         Body("Experiments are methodological prompts. Record the experience as presented before importing a preferred philosophical theory.",color=Muted)
+        OutlinedButton(onClick={
+            SeminarPlaybackService.send(context,SeminarPlaybackService.ACTION_PLAY,
+                listOf("lab:${protocol.id}"))
+        },modifier=Modifier.fillMaxWidth().heightIn(min=56.dp)){
+            Icon(Icons.Default.Headphones,null,Modifier.size(19.dp))
+            Spacer(Modifier.width(8.dp))
+            Text("Listen to guided research exercise")
+        }
         Row(Modifier.horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(7.dp)) {
             protocols.forEach { LabelTag(it.title,it.id==chosen){chosen=it.id} }
         }
@@ -307,14 +344,32 @@ private fun PhenomenologicalLaboratory(lesson:Lesson,onSaveNote:(String,String)-
         Body(protocol.observation)
         OutlinedTextField(value=description,onValueChange={description=it},
             modifier=Modifier.fillMaxWidth(),label={Text("Describe what is given")},minLines=3,maxLines=7)
+        OutlinedButton(onClick={dictate("description")},
+            modifier=Modifier.fillMaxWidth().heightIn(min=49.dp)){
+            Icon(Icons.Default.Mic,null,Modifier.size(17.dp))
+            Spacer(Modifier.width(7.dp))
+            Text("Dictate description (optional)")
+        }
         Eyebrow("II · CONCEPTUAL DISTINCTION")
         Body(protocol.distinction)
         OutlinedTextField(value=analysis,onValueChange={analysis=it},
             modifier=Modifier.fillMaxWidth(),label={Text("Reconstruct a provisional argument")},minLines=3,maxLines=7)
+        OutlinedButton(onClick={dictate("analysis")},
+            modifier=Modifier.fillMaxWidth().heightIn(min=49.dp)){
+            Icon(Icons.Default.Mic,null,Modifier.size(17.dp))
+            Spacer(Modifier.width(7.dp))
+            Text("Dictate analysis (optional)")
+        }
         Eyebrow("III · COUNTEREXAMPLE")
         Body(protocol.counterexample)
         OutlinedTextField(value=objection,onValueChange={objection=it},
             modifier=Modifier.fillMaxWidth(),label={Text("Test the claim against an objection")},minLines=3,maxLines=7)
+        OutlinedButton(onClick={dictate("objection")},
+            modifier=Modifier.fillMaxWidth().heightIn(min=49.dp)){
+            Icon(Icons.Default.Mic,null,Modifier.size(17.dp))
+            Spacer(Modifier.width(7.dp))
+            Text("Dictate objection (optional)")
+        }
         Button(onClick={
             onSaveNote("Institute Laboratory · ${protocol.title}",
                 "Lesson ${lesson.id}; protocol ${protocol.id}\n\nOBSERVATION\n${description.trim()}\n\nINTERPRETATION\n${analysis.trim()}\n\nOBJECTION\n${objection.trim()}")
@@ -324,6 +379,9 @@ private fun PhenomenologicalLaboratory(lesson:Lesson,onSaveNote:(String,String)-
             Icon(Icons.Default.Save,null,Modifier.size(16.dp))
             Spacer(Modifier.width(6.dp));Text("Save research dossier")
         }
+        if(voiceMessage.isNotBlank()) Text(voiceMessage,color=Muted,fontSize=11.sp)
+        Text("Speech recognition uses your phone's provider and may require internet. It starts only when you tap Dictate.",
+            color=Muted,fontSize=10.sp,lineHeight=16.sp)
         Text("These exercises are not clinical assessments or proof of original research; your notes remain on your device unless you export them.",
             color=Muted,fontSize=10.sp,lineHeight=16.sp)
     }
