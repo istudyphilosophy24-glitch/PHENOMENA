@@ -22,10 +22,12 @@ jobs:
           # Keep the new native TTS engine controller and manifest over the archived edition.
           cp app/src/main/java/com/phenomena/study/player/StudyPlayer.kt /tmp/phenomena-upgraded-player.kt
           cp app/src/main/AndroidManifest.xml /tmp/phenomena-upgraded-manifest.xml
+          cp app/src/main/res/values/styles.xml /tmp/phenomena-modern-styles.xml
           base64 --decode source/PHENOMENA-70h-Android-Source.tar.xz.base64 > /tmp/phenomena-70h.tar.xz
           tar -xJf /tmp/phenomena-70h.tar.xz --strip-components=1
           cp /tmp/phenomena-upgraded-player.kt app/src/main/java/com/phenomena/study/player/StudyPlayer.kt
           cp /tmp/phenomena-upgraded-manifest.xml app/src/main/AndroidManifest.xml
+          cp /tmp/phenomena-modern-styles.xml app/src/main/res/values/styles.xml
           for f in Design.kt PhenomenaShell.kt ReadingScreens.kt KnowledgeScreens.kt; do
             cp "/tmp/phenomena-ui/$f" "app/src/main/java/com/phenomena/study/ui/$f"
           done
