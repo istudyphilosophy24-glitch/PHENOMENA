@@ -33,6 +33,12 @@ class SeminarPlaybackService : Service() {
     companion object {
         const val ACTION_PLAY = "com.phenomena.study.radio.PLAY"
         const val ACTION_RADIO = "com.phenomena.study.radio.RADIO"
+        const val ACTION_SLEEP = "com.phenomena.study.radio.SLEEP"
+        const val ACTION_BOOKMARK = "com.phenomena.study.radio.BOOKMARK"
+        const val ACTION_RESTORE_BOOKMARK = "com.phenomena.study.radio.RESTORE_BOOKMARK"
+        const val EXTRA_MINUTES = "sleep_minutes"
+        const val EXTRA_BOOKMARK_INDEX = "bookmark_index"
+        const val EXTRA_STYLE = "radio_style"
         const val ACTION_PAUSE = "com.phenomena.study.radio.PAUSE"
         const val ACTION_RESUME = "com.phenomena.study.radio.RESUME"
         const val ACTION_NEXT = "com.phenomena.study.radio.NEXT"
@@ -43,10 +49,14 @@ class SeminarPlaybackService : Service() {
         const val EXTRA_CHUNK = "chunk_index"
         private const val CHANNEL_ID = "phenomena_seminars_v2"
         private const val NOTIFY_ID = 2091
-        fun send(context: Context, action: String, modules: List<String> = emptyList()) {
+        fun send(context: Context, action: String, modules: List<String> = emptyList(),
+                 minutes: Int = -1, bookmarkIndex: Int = -1, style: String = "") {
             val request = Intent(context, SeminarPlaybackService::class.java).setAction(action)
             if (modules.isNotEmpty()) request.putStringArrayListExtra(EXTRA_MODULES, ArrayList(modules))
-            if (action == ACTION_PLAY || action == ACTION_RADIO || action == ACTION_RESUME) {
+            if(minutes>=0) request.putExtra(EXTRA_MINUTES,minutes)
+            if(bookmarkIndex>=0) request.putExtra(EXTRA_BOOKMARK_INDEX,bookmarkIndex)
+            if(style.isNotBlank()) request.putExtra(EXTRA_STYLE,style)
+            if (action == ACTION_PLAY || action == ACTION_RADIO || action == ACTION_RESUME || action == ACTION_RESTORE_BOOKMARK) {
                 ContextCompat.startForegroundService(context, request)
             } else context.startService(request)
         }
@@ -73,6 +83,8 @@ class SeminarPlaybackService : Service() {
     private var chapters: List<Chunk> = emptyList()
     private var playbackRate = 0.95f
     private var radioMode = false
+    private var radioStyle = "DISCOVERY"
+    private val sleeper=Runnable { if(active)stopRadio() }
 
     override fun onCreate() {
         super.onCreate()
@@ -111,6 +123,9 @@ class SeminarPlaybackService : Service() {
             }
             ACTION_RADIO -> {
                 radioMode=true
+                radioStyle=intent.getStringExtra(EXTRA_STYLE)?.takeIf {
+                    it=="DISCOVERY" || it=="THEMATIC" || it=="NOCTURNAL"
+                } ?: "DISCOVERY"
                 modules=nextRandomMix()
                 chapters=buildQueue(modules)
                 if(chapters.isEmpty()) { stopRadio(); return START_NOT_STICKY }
@@ -130,6 +145,19 @@ class SeminarPlaybackService : Service() {
             ACTION_NEXT -> advance(1)
             ACTION_PREVIOUS -> advance(-1)
             ACTION_STOP -> stopRadio()
+            ACTION_SLEEP -> {
+                val minutes=intent.getIntExtra(EXTRA_MINUTES,-1)
+                if(minutes>=0) {
+                    handler.removeCallbacks(sleeper)
+                    val deadline=if(minutes==0)0L else System.currentTimeMillis()+minutes*60000L
+                    prefs.edit().putLong("sleep_until",deadline).apply()
+                    if(minutes>0)handler.postDelayed(sleeper,minutes*60000L)
+                    save()
+                }
+            }
+            ACTION_BOOKMARK -> bookmarkNow()
+            ACTION_RESTORE_BOOKMARK -> restoreBookmark(
+                intent.getIntExtra(EXTRA_BOOKMARK_INDEX,-1))
             else -> { if(!active) return START_NOT_STICKY }
         }
         updateNotification()
@@ -198,7 +226,12 @@ class SeminarPlaybackService : Service() {
             val array=JSONArray(prefs.getString("radio_history","[]"))
             (0 until array.length()).map { array.getString(it) }
         }.getOrDefault(emptyList())
-        val available=candidates.filterNot { it in recent }.ifEmpty { candidates }
+        val pool=when(radioStyle) {
+            "THEMATIC" -> candidates.filter { it.startsWith("university:") || it.startsWith("guided:") }
+            "NOCTURNAL" -> candidates.filterNot { it.startsWith("guided:") }
+            else -> candidates
+        }.ifEmpty { candidates }
+        val available=pool.filterNot { it in recent }.ifEmpty { pool }
         val chosen=available.shuffled().take(24)
         prefs.edit().putString("radio_history",
             JSONArray((recent+chosen).takeLast(72)).toString()).apply()
@@ -214,6 +247,14 @@ class SeminarPlaybackService : Service() {
     }
     private fun restore() {
         radioMode=prefs.getBoolean("radio_enabled",false)
+        radioStyle=prefs.getString("radio_style","DISCOVERY").orEmpty()
+        val deadline=prefs.getLong("sleep_until",0L)
+        handler.removeCallbacks(sleeper)
+        if(deadline>0L) {
+            val remaining=deadline-System.currentTimeMillis()
+            if(remaining<=0L) { stopRadio();return }
+            handler.postDelayed(sleeper,remaining)
+        }
         modules=readSavedModules()
         chapters=buildQueue(modules)
         cursor=prefs.getInt("chunk",0).coerceIn(0,(chapters.size-1).coerceAtLeast(0))
@@ -222,6 +263,7 @@ class SeminarPlaybackService : Service() {
         prefs.edit().putString("module_queue",JSONArray(modules).toString())
             .putInt("chunk",cursor).putLong("saved_at",System.currentTimeMillis())
             .putBoolean("radio_enabled",radioMode)
+            .putString("radio_style",radioStyle)
             .putBoolean("running",active)
             .putString("play_mode",if(radioMode) "RADIO" else "LONG")
             .putString("current_title",chapters.getOrNull(cursor)?.chapterTitle.orEmpty())
@@ -231,6 +273,37 @@ class SeminarPlaybackService : Service() {
             .putExtra("paused",paused))
     }
 
+    private fun bookmarkNow() {
+        if(chapters.isEmpty())return
+        val history=runCatching {
+            JSONArray(prefs.getString("audio_bookmarks_v4","[]"))
+        }.getOrDefault(JSONArray())
+        val current=chapters[cursor.coerceIn(0,chapters.lastIndex)]
+        val entry=org.json.JSONObject().put("title",current.chapterTitle)
+            .put("program",current.moduleTitle)
+            .put("modules",JSONArray(modules)).put("cursor",cursor)
+            .put("radio",radioMode).put("style",radioStyle)
+            .put("time",System.currentTimeMillis())
+        val updated=JSONArray().put(entry)
+        for(i in 0 until minOf(history.length(),14))updated.put(history.optJSONObject(i))
+        prefs.edit().putString("audio_bookmarks_v4",updated.toString()).apply()
+        save()
+    }
+    private fun restoreBookmark(index:Int) {
+        val entry=runCatching {
+            JSONArray(prefs.getString("audio_bookmarks_v4","[]")).optJSONObject(index)
+        }.getOrNull() ?:return
+        val a=entry.optJSONArray("modules") ?:return
+        val ids=(0 until a.length()).map{a.optString(it)}.filter{it.isNotBlank()}.take(24)
+        if(ids.isEmpty())return
+        radioMode=entry.optBoolean("radio",false)
+        radioStyle=entry.optString("style","DISCOVERY")
+        modules=ids;chapters=buildQueue(modules)
+        if(chapters.isEmpty())return
+        cursor=entry.optInt("cursor",0).coerceIn(0,chapters.lastIndex)
+        active=true;paused=false;save();ensureForeground()
+        if(speechReady)speak() else prepareTts()
+    }
     private fun requestFocus():Boolean {
         if(audioFocus!=null) return true
         val change=AudioManager.OnAudioFocusChangeListener { state ->
@@ -317,6 +390,8 @@ class SeminarPlaybackService : Service() {
         if(active && !paused) speak() else updateNotification()
     }
     private fun stopRadio() {
+        handler.removeCallbacks(sleeper)
+        prefs.edit().putLong("sleep_until",0L).apply()
         currentUtterance=null
         active=false;paused=false;speechReady=false;ttsGeneration++
         tts?.stop();tts?.shutdown();tts=null
@@ -372,6 +447,7 @@ class SeminarPlaybackService : Service() {
         session?.setPlaybackState(PlaybackState.Builder().setActions(actions).setState(state,0L,1f).build())
     }
     override fun onDestroy() {
+        handler.removeCallbacks(sleeper)
         ttsGeneration++
         tts?.stop();tts?.shutdown();tts=null
         audioFocus?.let {audio.abandonAudioFocusRequest(it)}
