@@ -18,6 +18,7 @@ import com.phenomena.study.MainActivity
 import com.phenomena.study.data.Catalog
 import com.phenomena.study.data.InstituteMaterials
 import com.phenomena.study.learning.GuidedTranscript
+import com.phenomena.study.learning.UniversityPedagogy
 import com.phenomena.study.player.toSpeechChunks
 import com.phenomena.study.model.Beat
 import com.phenomena.study.player.speechSafeChapter
@@ -139,6 +140,16 @@ class SeminarPlaybackService : Service() {
         val catalog=Catalog(applicationContext)
         val result=ArrayList<Chunk>()
         for(id in ids) {
+            if(id.startsWith("university:")) {
+                val lesson=catalog.lesson(id.removePrefix("university:")) ?: continue
+                val source=catalog.work(lesson.workId)?.shortTitle.orEmpty()
+                val segments=UniversityPedagogy.beats(lesson) { text->toSpeechChunks(text,2000) }
+                segments.forEachIndexed { index, section ->
+                    result.add(Chunk(id, "University · $source · ${lesson.title}",
+                        "${lesson.id}:university:${index+1}", section.title, section.content))
+                }
+                continue
+            }
             if(id.startsWith("guided:")) {
                 val lesson=catalog.lesson(id.removePrefix("guided:")) ?: continue
                 val work=catalog.work(lesson.workId)?.shortTitle
@@ -180,7 +191,8 @@ class SeminarPlaybackService : Service() {
         val catalog=Catalog(applicationContext)
         val candidates=(catalog.seminars.map { it.id } +
             InstituteMaterials.lectures.map { it.id } +
-            catalog.lessons.map { "guided:${it.id}" }).distinct()
+            catalog.lessons.map { "guided:${it.id}" } +
+            catalog.lessons.map { "university:${it.id}" }).distinct()
         if(candidates.isEmpty()) return emptyList()
         val recent=runCatching {
             val array=JSONArray(prefs.getString("radio_history","[]"))
