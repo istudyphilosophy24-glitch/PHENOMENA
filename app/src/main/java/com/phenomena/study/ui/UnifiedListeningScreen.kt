@@ -67,6 +67,7 @@ fun UnifiedListeningScreen(
     val prefs=remember { context.getSharedPreferences("phenomena_radio_v2",Context.MODE_PRIVATE) }
     var currentTitle by remember { mutableStateOf(prefs.getString("current_title","").orEmpty()) }
     var currentChunk by remember { mutableIntStateOf(prefs.getInt("chunk",0)) }
+    var currentModule by remember { mutableStateOf(prefs.getString("current_module","").orEmpty()) }
     var backgroundMode by remember { mutableStateOf(prefs.getString("play_mode","LONG").orEmpty()) }
     var activeStatus by remember { mutableStateOf(prefs.getBoolean("running",false)) }
     DisposableEffect(context) {
@@ -74,6 +75,7 @@ fun UnifiedListeningScreen(
             override fun onReceive(c:Context?,intent:Intent?) {
                 currentTitle=prefs.getString("current_title","").orEmpty()
                 currentChunk=prefs.getInt("chunk",0)
+                currentModule=prefs.getString("current_module","").orEmpty()
                 backgroundMode=prefs.getString("play_mode","LONG").orEmpty()
                 activeStatus=prefs.getBoolean("running",false)
             }
@@ -111,7 +113,8 @@ fun UnifiedListeningScreen(
         }
         item {
             Panel(Modifier.fillMaxWidth()) {
-                Eyebrow("CURRENT STUDY · VERIFIED TOPIC")
+                Eyebrow(if(mode=="Radio") "YOUR LIBRARY STUDY · RADIO PLAYS ACROSS WORKS"
+                    else "CURRENT STUDY · SELECTED WORK")
                 Text(imported?.title?:lesson.title,fontSize=24.sp,lineHeight=29.sp,
                     color=Ink,fontFamily=FontFamily.Serif)
                 Text(if(imported!=null)"Your imported ${imported.format} document"
@@ -293,7 +296,7 @@ fun UnifiedListeningScreen(
                             Spacer(Modifier.width(8.dp));Text("Play complete work seminar")
                         }
                     }
-                    BackgroundTransport(currentTitle,currentChunk,activeStatus,backgroundMode)
+                    BackgroundTransport(currentTitle,currentModule,currentChunk,activeStatus,backgroundMode)
                 }
             }
             "Radio" -> item {
@@ -328,11 +331,13 @@ fun UnifiedListeningScreen(
 }
 
 @Composable
-private fun BackgroundTransport(title:String,chunk:Int,active:Boolean,mode:String) {
+private fun BackgroundTransport(title:String,module:String,chunk:Int,active:Boolean,mode:String) {
     val context=LocalContext.current
     Column(verticalArrangement=Arrangement.spacedBy(10.dp)) {
         Rule()
         Eyebrow("BACKGROUND AUDIO CONTROLS")
+        if(module.isNotBlank()) Text(module,
+            color=Brass,fontSize=11.sp,lineHeight=16.sp)
         Text(if(title.isNotBlank()) title else "No background chapter selected",
             color=Ink,fontSize=14.sp,fontWeight=FontWeight.SemiBold)
         Text("${if(active)"Active" else "Last saved"} · ${mode.lowercase()} · segment ${chunk+1}",
