@@ -14,8 +14,14 @@ jobs:
       - name: Unpack 70-hour Android source
         run: |
           test -s source/PHENOMENA-70h-Android-Source.tar.xz.base64
+          # Keep the new native TTS engine controller and manifest over the archived edition.
+          cp app/src/main/java/com/phenomena/study/player/StudyPlayer.kt /tmp/phenomena-upgraded-player.kt
+          cp app/src/main/AndroidManifest.xml /tmp/phenomena-upgraded-manifest.xml
           base64 --decode source/PHENOMENA-70h-Android-Source.tar.xz.base64 > /tmp/phenomena-70h.tar.xz
           tar -xJf /tmp/phenomena-70h.tar.xz --strip-components=1
+          cp /tmp/phenomena-upgraded-player.kt app/src/main/java/com/phenomena/study/player/StudyPlayer.kt
+          cp /tmp/phenomena-upgraded-manifest.xml app/src/main/AndroidManifest.xml
+          python3 tools/patch_narrator_ui.py
           test -s app/src/main/assets/seminars.json
           # Compilation compatibility fix until the source archive is regenerated.
           sed -i 's/class Catalog(context: Context) {/class Catalog(private val context: Context) {/' app/src/main/java/com/phenomena/study/data/Catalog.kt
@@ -42,12 +48,13 @@ jobs:
       - name: Upload installable debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: PHENOMENA-70h-debug-APK
+          name: PHENOMENA-70h-native-narrator-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
       - name: Publish APK to GitHub Releases
+        if: github.ref == 'refs/heads/main'
         continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create v1.1.0-70h "app/build/outputs/apk/debug/app-debug.apk#PHENOMENA-70h-debug.apk" --title "PHENOMENA 70h Android (Debug)" --notes "Experimental Android debug build with the expanded phenomenological curriculum and local TTS. Not a signed production release." || gh release upload v1.1.0-70h "app/build/outputs/apk/debug/app-debug.apk#PHENOMENA-70h-debug.apk" --clobber
+          gh release create v1.2.0-native-narrator "app/build/outputs/apk/debug/app-debug.apk#PHENOMENA-1.2-Native-Narrator-debug.apk" --title "PHENOMENA 1.2 — SOPHIA-style Native Narrator (Debug)" --notes "Native Android TTS engine/voice selection, saved narrator preferences and 70-hour phenomenological curriculum. Android system speech engines only; ElevenReader voices are not supported. Debug build, not production-signed." || gh release upload v1.2.0-native-narrator "app/build/outputs/apk/debug/app-debug.apk#PHENOMENA-1.2-Native-Narrator-debug.apk" --clobber
