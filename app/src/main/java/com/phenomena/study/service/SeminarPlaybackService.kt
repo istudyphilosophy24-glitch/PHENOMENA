@@ -19,6 +19,7 @@ import com.phenomena.study.data.Catalog
 import com.phenomena.study.data.InstituteMaterials
 import com.phenomena.study.learning.GuidedTranscript
 import com.phenomena.study.learning.UniversityPedagogy
+import com.phenomena.study.learning.MasterclassesV4
 import com.phenomena.study.player.toSpeechChunks
 import com.phenomena.study.model.Beat
 import com.phenomena.study.player.speechSafeChapter
@@ -172,6 +173,17 @@ class SeminarPlaybackService : Service() {
         val catalog=Catalog(applicationContext)
         val result=ArrayList<Chunk>()
         for(id in ids) {
+            val master=MasterclassesV4.all.firstOrNull{it.id==id}
+            if(master!=null){
+                master.sections.forEachIndexed{n,section->
+                    speechSafeChapter(Beat("Masterclass Part ${n+1}",section,"SCHOLARLY MASTERCLASS"))
+                        .forEachIndexed{j,beat->
+                            result.add(Chunk(master.id,master.title,
+                                "${master.id}:${n+1}:${j+1}",beat.title,beat.content))
+                        }
+                }
+                continue
+            }
             if(id.startsWith("university:")) {
                 val lesson=catalog.lesson(id.removePrefix("university:")) ?: continue
                 val source=catalog.work(lesson.workId)?.shortTitle.orEmpty()
@@ -237,6 +249,7 @@ class SeminarPlaybackService : Service() {
         val catalog=Catalog(applicationContext)
         val candidates=(catalog.seminars.map { it.id } +
             InstituteMaterials.lectures.map { it.id } +
+            MasterclassesV4.all.map { it.id } +
             catalog.lessons.map { "guided:${it.id}" } +
             catalog.lessons.map { "university:${it.id}" }).distinct()
         if(candidates.isEmpty()) return emptyList()
@@ -250,7 +263,8 @@ class SeminarPlaybackService : Service() {
                     id.startsWith("university:") -> catalog.lesson(id.removePrefix("university:"))?.workId==thematicWorkId
                     id.startsWith("guided:") -> catalog.lesson(id.removePrefix("guided:"))?.workId==thematicWorkId
                     else -> catalog.seminar(id)?.workId==thematicWorkId ||
-                        InstituteMaterials.lectures.any { it.id==id && it.workId==thematicWorkId }
+                        InstituteMaterials.lectures.any { it.id==id && it.workId==thematicWorkId } ||
+                        MasterclassesV4.all.any { it.id==id && it.workId==thematicWorkId }
                 }
             }
             "NOCTURNAL" -> candidates.filterNot { it.startsWith("guided:") }
