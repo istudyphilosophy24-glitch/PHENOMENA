@@ -29,6 +29,11 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.phenomena.study.data.*
 import com.phenomena.study.learning.GuidedTranscript
+import com.phenomena.study.learning.UniversityPedagogy
+import com.phenomena.study.integration.ElevenReaderBridge
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import com.phenomena.study.model.*
 import com.phenomena.study.player.*
 import com.phenomena.study.service.SeminarPlaybackService
@@ -43,11 +48,14 @@ fun UnifiedListeningScreen(
     onChooseLesson:(String)->Unit,onAudioPick:()->Unit,onShare:(String)->Unit
 ) {
     val context= LocalContext.current
+    val scope=rememberCoroutineScope()
+    var eyesFree by remember { mutableStateOf(false) }
+    var handoffStatus by remember { mutableStateOf("") }
     val listenPreferences=remember { context.getSharedPreferences("phenomena_unified_v31",Context.MODE_PRIVATE) }
     var mode by remember(lesson.id,imported?.id) {
         mutableStateOf(if(imported!=null) "Guided"
             else listenPreferences.getString("last_mode","Guided").orEmpty().takeIf {
-                it=="Guided" || it=="Long" || it=="Radio"
+                it=="Guided" || it=="Long" || it=="Radio" || it=="University"
             } ?: "Guided")
     }
     var showSettings by remember { mutableStateOf(false) }
@@ -97,10 +105,11 @@ fun UnifiedListeningScreen(
         currentTitle="Starting narration…"
     }
     LaunchedEffect(mode,lesson.id,imported?.id) {
-        if(mode=="Guided"){
+        player.stop()
+        if(imported!=null && mode=="Guided") {
             player.autoAdvance=true
             player.setSegments(guidedBeats)
-        } else player.stop()
+        }
     }
     LazyColumn(Modifier.fillMaxSize(),contentPadding=PaddingValues(18.dp),
         verticalArrangement=Arrangement.spacedBy(17.dp)) {
@@ -157,105 +166,97 @@ fun UnifiedListeningScreen(
             }
         }
         item {
-            Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-                listOf("Guided","Long","Radio").forEach { option ->
-                    Surface(onClick={
-                        if(mode!=option) {
-                            player.stop()
-                            if(option=="Guided")
+            Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,
+                horizontalArrangement=Arrangement.SpaceBetween) {
+                Eyebrow("GRAND PLAYER · FOUR LISTENING MODES")
+                OutlinedButton(onClick={eyesFree=!eyesFree}) {
+                    Icon(if(eyesFree)Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                        "Toggle eyes-free interface",Modifier.size(18.dp))
+                    Spacer(Modifier.width(5.dp))
+                    Text(if(eyesFree)"Show text" else "Eyes-free",fontSize=11.sp)
+                }
+            }
+            val options=listOf(listOf("Guided","Long"),listOf("Radio","University"))
+            options.forEach { pair ->
+                Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(9.dp)) {
+                    pair.forEach { option ->
+                        Surface(onClick={
+                            if(mode!=option) {
+                                player.stop()
                                 SeminarPlaybackService.send(context,SeminarPlaybackService.ACTION_PAUSE)
-                            mode=option
-                            if(imported==null) listenPreferences.edit().putString("last_mode",option).apply()
-                        }
-                    },modifier=Modifier.weight(1f),
-                        color=if(option==mode)Moss else CardSurface,
-                        shape=RoundedCornerShape(16.dp),
-                        border=BorderStroke(1.dp,if(option==mode)Mint else Line)) {
-                        Column(Modifier.padding(vertical=14.dp,horizontal=5.dp),
-                            horizontalAlignment=Alignment.CenterHorizontally,
-                            verticalArrangement=Arrangement.spacedBy(5.dp)){
-                            Icon(when(option){
-                                "Guided"->Icons.Default.School
-                                "Long"->Icons.Default.Headphones
-                                else->Icons.Default.Shuffle
-                            },null,tint=if(option==mode)Mint else Muted)
-                            Text(when(option){"Long"->"Long Format";else->option},fontSize=11.sp,
-                                fontWeight=FontWeight.SemiBold,color=Ink)
+                                mode=option
+                                if(imported==null) listenPreferences.edit()
+                                    .putString("last_mode",option).apply()
+                            }
+                        },modifier=Modifier.weight(1f).heightIn(min=79.dp),
+                            color=if(option==mode)Moss else CardSurface,
+                            shape=RoundedCornerShape(16.dp),
+                            border=BorderStroke(1.dp,if(option==mode)Mint else Line)) {
+                            Column(Modifier.padding(12.dp),horizontalAlignment=Alignment.CenterHorizontally,
+                                verticalArrangement=Arrangement.spacedBy(7.dp)){
+                                Icon(when(option){
+                                    "Guided"->Icons.Default.AutoStories
+                                    "Long"->Icons.Default.Headphones
+                                    "Radio"->Icons.Default.Shuffle
+                                    else->Icons.Default.School
+                                },null,tint=if(option==mode)Mint else Muted,modifier=Modifier.size(28.dp))
+                                Text(when(option){"Long"->"Long Format";else->option},
+                                    fontSize=15.sp,fontWeight=FontWeight.SemiBold,color=Ink)
+                            }
                         }
                     }
                 }
+                Spacer(Modifier.height(9.dp))
             }
         }
         when(mode) {
             "Guided" -> {
                 item {
                     Panel(Modifier.fillMaxWidth()){
-                        Eyebrow("GUIDED · ONE CONTINUOUS TRANSCRIPT")
-                        Display(if(imported!=null)"Read your document." else "From question to criticism.",size=25)
-                        Text(if(imported!=null)
-                            "Your imported text is narrated continuously through TTS-safe chunks."
-                        else "Synopsis → foundations → exposition → advanced analysis → argument → example → comparison → critique → seminar → debate.",
+                        Eyebrow("GUIDED · CONTINUOUS ORIGINAL COMMENTARY")
+                        Display("From question to criticism.",size=25)
+                        if(!eyesFree) Text("Synopsis, foundations, exposition, advanced interpretation, "
+                            +"arguments, examples and objections flow in one continuous lecture.",
                             color=Muted,fontSize=12.sp,lineHeight=19.sp)
-                        LinearProgressIndicator(progress={
-                            if(guidedBeats.isEmpty())0f else (player.beatIndex+1f)/guidedBeats.size
-                        },modifier=Modifier.fillMaxWidth(),color=Mint,trackColor=Cream)
-                        Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically,
-                            horizontalArrangement=Arrangement.Center) {
-                            IconButton(onClick={player.jump(-1)},enabled=guidedBeats.isNotEmpty()){
-                                Icon(Icons.Default.SkipPrevious,"Previous guided passage",tint=Mint)
-                            }
-                            Spacer(Modifier.width(20.dp))
-                            FilledIconButton(onClick={
-                                SeminarPlaybackService.send(context,SeminarPlaybackService.ACTION_STOP)
-                                player.toggleSpeech()
-                            },enabled=guidedBeats.isNotEmpty(),modifier=Modifier.size(62.dp),
-                                colors=IconButtonDefaults.filledIconButtonColors(containerColor=Mint)) {
-                                Icon(if(player.speaking)Icons.Default.Stop else Icons.Default.PlayArrow,
-                                    "Play / stop continuous guided study",Modifier.size(32.dp))
-                            }
-                            Spacer(Modifier.width(20.dp))
-                            IconButton(onClick={player.jump(1)},enabled=guidedBeats.isNotEmpty()){
-                                Icon(Icons.Default.SkipNext,"Next guided passage",tint=Mint)
-                            }
+                        Button(onClick={
+                            if(imported!=null) {
+                                SeminarPlaybackService.send(context,SeminarPlaybackService.ACTION_PAUSE)
+                                player.setSegments(guidedBeats)
+                                player.autoAdvance=true
+                                player.play()
+                            } else startRadio(SeminarPlaybackService.ACTION_PLAY,
+                                listOf("guided:${lesson.id}"))
+                        },modifier=Modifier.fillMaxWidth().heightIn(min=68.dp),
+                            enabled=guidedBeats.isNotEmpty()){
+                            Icon(Icons.Default.PlayArrow,"Begin guided lecture",Modifier.size(27.dp))
+                            Spacer(Modifier.width(8.dp))
+                            Text("Listen to complete Guided lecture",fontSize=15.sp)
                         }
-                        Text(player.status,color=Muted,fontSize=11.sp)
-                        Text("Passage ${if(guidedBeats.isEmpty())0 else player.beatIndex+1} of ${guidedBeats.size} · Auto-advance enabled",
-                            color=Brass,fontSize=11.sp)
-                        Text("This is one logically continuous narration; speech is chunked only to meet Android TTS engine limits.",
-                            color=Muted,fontSize=10.sp,lineHeight=16.sp)
+                        if(imported!=null) {
+                            Text("Imported files use the local narrator. Built-in lessons use the "
+                                +"background audio service.",color=Muted,fontSize=11.sp)
+                        } else AudioFirstTransport(currentTitle,currentModule,currentChunk,
+                            activeStatus,backgroundMode)
                     }
                 }
-                item {
-                    Panel(Modifier.fillMaxWidth()){
-                        Eyebrow("SYNCHRONIZED TRANSCRIPT")
-                        Text(guidedBeats.getOrNull(player.beatIndex)?.title?:"No passage available",
-                            fontWeight=FontWeight.SemiBold,color=Brass,fontSize=14.sp)
-                        SelectionContainer {
-                            Body(guidedBeats.getOrNull(player.beatIndex)?.content.orEmpty())
-                        }
-                        OutlinedButton(onClick={showSettings=!showSettings},
-                            modifier=Modifier.fillMaxWidth()) {
-                            Text(if(showSettings)"Hide narrator settings" else "Narrator · voice and speed",
-                                modifier=Modifier.weight(1f))
-                            Icon(Icons.Default.Tune,null)
-                        }
-                        if(showSettings){
-                            NarratorSettingsPanel(player)
-                            Text("Speaking rate: ${"%.2f".format(player.speechRate)}×",color=Muted,fontSize=11.sp)
-                            Slider(player.speechRate,onValueChange=player::setRate,valueRange=0.65f..1.5f)
-                        }
-                    }
-                }
-                if(imported==null) {
-                    item {RowHeadline("Teaching sequence","${guidedSections.size} MOVEMENTS")}
-                    items(guidedSections,key={it.heading}) { part ->
-                        Surface(color=CardSurface,shape=RoundedCornerShape(15.dp),
-                            border=BorderStroke(1.dp,Line),modifier=Modifier.fillMaxWidth()) {
-                            Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(5.dp)){
-                                Text(part.heading,color=Ink,fontSize=14.sp,fontWeight=FontWeight.SemiBold)
-                                Text(part.text,color=Muted,fontSize=11.sp,lineHeight=17.sp,
-                                    maxLines=3,overflow=TextOverflow.Ellipsis)
+                if(!eyesFree) {
+                    item {
+                        Panel(Modifier.fillMaxWidth()){
+                            Eyebrow("LESSON TRANSCRIPT · EDITORIAL COMMENTARY")
+                            if(imported!=null) Body(guidedBeats.getOrNull(player.beatIndex)?.content
+                                ?:"No extracted text is available.")
+                            else {
+                                Text("The entire script is arranged into ${guidedSections.size} conceptual movements.",
+                                    color=Muted,fontSize=12.sp)
+                                guidedSections.forEach { section ->
+                                    Text(section.heading,color=Brass,fontSize=13.sp,
+                                        fontWeight=FontWeight.SemiBold)
+                                    Text(section.text.take(420)+(if(section.text.length>420)"…" else ""),
+                                        color=Ink,fontSize=13.sp,lineHeight=21.sp)
+                                }
                             }
+                            Text("Transcript is available for optional study; no sustained reading is required.",
+                                color=Muted,fontSize=10.sp)
                         }
                     }
                 }
@@ -296,7 +297,7 @@ fun UnifiedListeningScreen(
                             Spacer(Modifier.width(8.dp));Text("Play complete work seminar")
                         }
                     }
-                    BackgroundTransport(currentTitle,currentModule,currentChunk,activeStatus,backgroundMode)
+                    AudioFirstTransport(currentTitle,currentModule,currentChunk,activeStatus,backgroundMode)
                 }
             }
             "Radio" -> item {
@@ -314,8 +315,87 @@ fun UnifiedListeningScreen(
                     BackgroundTransport(currentTitle,currentModule,currentChunk,activeStatus,backgroundMode)
                 }
             }
+            "University" -> item {
+                Panel(Modifier.fillMaxWidth()){
+                    Eyebrow("UNIVERSITY · LEARN THROUGH LISTENING")
+                    Display("A professor in your pocket.",size=27)
+                    if(!eyesFree) Body("Twelve progressive teaching movements: lived example, "
+                        +"conceptual distinctions, original exposition, argument reconstruction, "
+                        +"criticism, counterexample and teach-back.",color=Muted)
+                    if(imported!=null) EmptyNotice("Select a PHENOMENA study lesson to hear a "
+                        +"structured University course. Your imported text remains in Guided.")
+                    else {
+                        Text("${UniversityPedagogy.stages(lesson).size} teaching stages · ${lesson.title}",
+                            color=Brass,fontSize=12.sp)
+                        Button(onClick={startRadio(SeminarPlaybackService.ACTION_PLAY,
+                            listOf("university:${lesson.id}"))},
+                            modifier=Modifier.fillMaxWidth().heightIn(min=68.dp)){
+                            Icon(Icons.Default.PlayArrow,"Begin University course",Modifier.size(27.dp))
+                            Spacer(Modifier.width(8.dp))
+                            Text("Listen to full University lecture",fontSize=15.sp)
+                        }
+                        AudioFirstTransport(currentTitle,currentModule,currentChunk,
+                            activeStatus,backgroundMode)
+                    }
+                }
+            }
         }
         item {
+            Panel(Modifier.fillMaxWidth()){
+                Eyebrow("ELEVENREADER · PREMIUM NARRATOR HANDOFF")
+                Text("Hear the selected lecture using your voices in the ElevenReader app.",
+                    color=Ink,fontSize=14.sp)
+                Text("PHENOMENA sends a UTF-8 lecture file through Android's documented "
+                    +"sharing system. Playback and voice choice take place in ElevenReader. "
+                    +"Audio position will not automatically sync back.",
+                    color=Muted,fontSize=11.sp,lineHeight=18.sp)
+                Button(onClick={
+                    scope.launch {
+                        try {
+                            val title= when(mode){
+                                "Guided"->"Guided · ${lesson.title}"
+                                "University"->"University · ${lesson.title}"
+                                "Long"->"Long seminar · ${catalog.work(lesson.workId)?.title ?: lesson.title}"
+                                else->"Radio · current study guide"
+                            }
+                            val manuscript=withContext(Dispatchers.Default) {
+                                when {
+                                    imported!=null->imported.content
+                                    mode=="Guided"->GuidedTranscript.transcript(lesson)
+                                    mode=="University"->UniversityPedagogy.transcript(lesson)
+                                    mode=="Long"->{
+                                        val main=modules.joinToString("\n\n") { module->
+                                            module.title+"\n\n"+module.chapters.joinToString("\n\n"){ch->
+                                                ch.title+"\n"+ch.text
+                                            }
+                                        }
+                                        main.ifBlank{GuidedTranscript.transcript(lesson)}
+                                    }
+                                    else->GuidedTranscript.transcript(lesson)
+                                }
+                            }
+                            val export=withContext(Dispatchers.IO){
+                                ElevenReaderBridge.prepare(context,title,manuscript)
+                            }
+                            player.stop()
+                            SeminarPlaybackService.send(context,SeminarPlaybackService.ACTION_PAUSE)
+                            val destination=ElevenReaderBridge.open(context,export)
+                            handoffStatus=if(destination==ElevenReaderBridge.Destination.ELEVENREADER)
+                                "Shared to ElevenReader. Select your preferred voice there."
+                            else "Choose ElevenReader from the Android share sheet."
+                        } catch(e:Exception) {
+                            handoffStatus="Couldn't share lecture: ${e.message ?: "unknown error"}"
+                        }
+                    }
+                },modifier=Modifier.fillMaxWidth().heightIn(min=58.dp)) {
+                    Icon(Icons.Default.Share,"Send lecture to ElevenReader",Modifier.size(20.dp))
+                    Spacer(Modifier.width(9.dp))
+                    Text("Open lecture in ElevenReader",fontSize=15.sp)
+                }
+                if(handoffStatus.isNotBlank()) Text(handoffStatus,color=Brass,fontSize=11.sp)
+            }
+        }
+        if(!eyesFree) item {
             OutlinedButton(onClick=onAudioPick,modifier=Modifier.fillMaxWidth()) {
                 Icon(Icons.Default.AudioFile,null)
                 Spacer(Modifier.width(8.dp));Text("Play your own audio recording")
@@ -330,41 +410,3 @@ fun UnifiedListeningScreen(
     }
 }
 
-@Composable
-private fun BackgroundTransport(title:String,module:String,chunk:Int,active:Boolean,mode:String) {
-    val context=LocalContext.current
-    Column(verticalArrangement=Arrangement.spacedBy(10.dp)) {
-        Rule()
-        Eyebrow("BACKGROUND AUDIO CONTROLS")
-        if(module.isNotBlank()) Text(module,
-            color=Brass,fontSize=11.sp,lineHeight=16.sp)
-        Text(if(title.isNotBlank()) title else "No background chapter selected",
-            color=Ink,fontSize=14.sp,fontWeight=FontWeight.SemiBold)
-        Text("${if(active)"Active" else "Last saved"} · ${mode.lowercase()} · segment ${chunk+1}",
-            color=Muted,fontSize=11.sp)
-        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)){
-            OutlinedButton(onClick={SeminarPlaybackService.send(context,SeminarPlaybackService.ACTION_PREVIOUS)},
-                modifier=Modifier.weight(1f),contentPadding=PaddingValues(9.dp)){
-                Icon(Icons.Default.SkipPrevious,"Previous",Modifier.size(18.dp))
-            }
-            OutlinedButton(onClick={SeminarPlaybackService.send(context,SeminarPlaybackService.ACTION_RESUME)},
-                modifier=Modifier.weight(1f),contentPadding=PaddingValues(9.dp)){
-                Icon(Icons.Default.PlayArrow,"Resume",Modifier.size(18.dp))
-            }
-            OutlinedButton(onClick={SeminarPlaybackService.send(context,SeminarPlaybackService.ACTION_PAUSE)},
-                modifier=Modifier.weight(1f),contentPadding=PaddingValues(9.dp)){
-                Icon(Icons.Default.Pause,"Pause",Modifier.size(18.dp))
-            }
-            OutlinedButton(onClick={SeminarPlaybackService.send(context,SeminarPlaybackService.ACTION_NEXT)},
-                modifier=Modifier.weight(1f),contentPadding=PaddingValues(9.dp)){
-                Icon(Icons.Default.SkipNext,"Next",Modifier.size(18.dp))
-            }
-            OutlinedButton(onClick={SeminarPlaybackService.send(context,SeminarPlaybackService.ACTION_STOP)},
-                modifier=Modifier.weight(1f),contentPadding=PaddingValues(9.dp)){
-                Icon(Icons.Default.Stop,"Stop",Modifier.size(18.dp))
-            }
-        }
-        Text("Requires a compatible installed Android speech engine. Long and Radio keep running with the screen off; Guided is controlled by the in-app player.",
-            color=Muted,fontSize=10.sp,lineHeight=17.sp)
-    }
-}
