@@ -19,6 +19,7 @@ jobs:
           test -s app/src/main/assets/seminars.json
           # Compilation compatibility fix until the source archive is regenerated.
           sed -i 's/class Catalog(context: Context) {/class Catalog(private val context: Context) {/' app/src/main/java/com/phenomena/study/data/Catalog.kt
+          sed -i '/val result = candidates.maxByOrNull/c\        val result = candidates.maxByOrNull { entry: Pair<String, String> -> query.count { token: String -> entry.second.contains(token, ignoreCase = true) } } ?: candidates.first()' app/src/main/java/com/phenomena/study/data/StudyTutor.kt
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
