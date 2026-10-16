@@ -311,7 +311,7 @@ fun UnifiedListeningScreen(
                         Icon(Icons.Default.Shuffle,null,Modifier.size(18.dp))
                         Spacer(Modifier.width(8.dp));Text("Start a new random station")
                     }
-                    BackgroundTransport(currentTitle,currentChunk,activeStatus,backgroundMode)
+                    BackgroundTransport(currentTitle,currentModule,currentChunk,activeStatus,backgroundMode)
                 }
             }
         }
