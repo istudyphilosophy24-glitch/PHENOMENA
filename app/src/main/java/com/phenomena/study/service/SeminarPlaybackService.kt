@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import com.phenomena.study.MainActivity
 import com.phenomena.study.data.Catalog
 import com.phenomena.study.data.InstituteMaterials
+import com.phenomena.study.player.UnifiedPrograms
 import com.phenomena.study.model.Beat
 import com.phenomena.study.player.speechSafeChapter
 import org.json.JSONArray
@@ -37,11 +38,13 @@ class SeminarPlaybackService : Service() {
         const val ACTION_STATUS = "com.phenomena.study.radio.STATUS"
         const val EXTRA_MODULES = "module_ids"
         const val EXTRA_CHUNK = "chunk_index"
+        const val EXTRA_MODE = "listening_mode"
         private const val CHANNEL_ID = "phenomena_seminars_v2"
         private const val NOTIFY_ID = 2091
-        fun send(context: Context, action: String, modules: List<String> = emptyList()) {
+        fun send(context: Context, action: String, modules: List<String> = emptyList(), mode: String? = null) {
             val request = Intent(context, SeminarPlaybackService::class.java).setAction(action)
             if (modules.isNotEmpty()) request.putStringArrayListExtra(EXTRA_MODULES, ArrayList(modules))
+            if (mode != null) request.putExtra(EXTRA_MODE, mode)
             if (action == ACTION_PLAY || action == ACTION_RESUME) {
                 ContextCompat.startForegroundService(context, request)
             } else context.startService(request)
@@ -66,6 +69,9 @@ class SeminarPlaybackService : Service() {
     private var foreground = false
     private var cursor = 0
     private var modules: List<String> = emptyList()
+    private var listeningMode = UnifiedPrograms.LONG
+    private var radioDeck: List<String> = emptyList()
+    private var radioDeckCursor = 0
     private var chapters: List<Chunk> = emptyList()
     private var playbackRate = 0.95f
 
@@ -93,8 +99,16 @@ class SeminarPlaybackService : Service() {
     override fun onStartCommand(intent:Intent?,flags:Int,startId:Int):Int {
         when(intent?.action) {
             ACTION_PLAY -> {
-                modules=intent.getStringArrayListExtra(EXTRA_MODULES)?.filter { it.isNotBlank() }
-                    ?.distinct()?.take(24).orEmpty().ifEmpty { readSavedModules() }
+                listeningMode = intent.getStringExtra(EXTRA_MODE)
+                    ?.takeIf { it in listOf(UnifiedPrograms.GUIDED, UnifiedPrograms.LONG, UnifiedPrograms.RADIO) }
+                    ?: UnifiedPrograms.LONG
+                modules = if (listeningMode == UnifiedPrograms.RADIO) {
+                    initializeRadio()
+                    nextRadioBatch()
+                } else {
+                    intent.getStringArrayListExtra(EXTRA_MODULES)
+                        ?.filter { it.isNotBlank() }?.distinct()?.take(24).orEmpty()
+                }
                 if(modules.isEmpty()) { stopRadio(); return START_NOT_STICKY }
                 chapters=buildQueue(modules)
                 if(chapters.isEmpty()) { stopRadio(); return START_NOT_STICKY }
@@ -120,27 +134,75 @@ class SeminarPlaybackService : Service() {
         return if(active) START_STICKY else START_NOT_STICKY
     }
 
+    private fun initializeRadio() {
+        val catalog=Catalog(applicationContext)
+        val programmes=UnifiedPrograms.radioProgrammes(
+            catalog.lessons.map { UnifiedPrograms.Programme(
+                UnifiedPrograms.GUIDED_PREFIX+it.id,it.workId,it.title,UnifiedPrograms.GUIDED) },
+            catalog.seminars.map { UnifiedPrograms.Programme(
+                it.id,it.workId,it.title,UnifiedPrograms.LONG) },
+            InstituteMaterials.lectures.map { UnifiedPrograms.Programme(
+                it.id,it.workId,it.title,"lecture") }
+        )
+        radioDeck=UnifiedPrograms.shuffleIds(programmes,System.nanoTime().toInt())
+        radioDeckCursor=0
+        prefs.edit().putString("radio_deck",JSONArray(radioDeck).toString())
+            .putInt("radio_deck_cursor",0).apply()
+    }
+    private fun nextRadioBatch():List<String> {
+        if(radioDeck.isEmpty() || radioDeckCursor>=radioDeck.size) initializeRadio()
+        val batch=radioDeck.drop(radioDeckCursor).take(12)
+        radioDeckCursor+=batch.size
+        prefs.edit().putInt("radio_deck_cursor",radioDeckCursor).apply()
+        return batch
+    }
+    private fun readRadioDeck() {
+        val json=prefs.getString("radio_deck","[]") ?: "[]"
+        radioDeck=runCatching {
+            val a=JSONArray(json)
+            (0 until a.length()).map { a.getString(it) }
+        }.getOrDefault(emptyList())
+        radioDeckCursor=prefs.getInt("radio_deck_cursor",0).coerceAtLeast(0)
+    }
+    private fun advanceRadioBatch():Boolean {
+        if(listeningMode!=UnifiedPrograms.RADIO) return false
+        val next=nextRadioBatch()
+        if(next.isEmpty()) return false
+        modules=next
+        chapters=buildQueue(modules)
+        cursor=0
+        save()
+        return chapters.isNotEmpty()
+    }
     private fun buildQueue(ids:List<String>):List<Chunk> {
         val catalog=Catalog(applicationContext)
         val result=ArrayList<Chunk>()
         for(id in ids) {
+            if(id.startsWith(UnifiedPrograms.GUIDED_PREFIX)) {
+                val lesson=catalog.lesson(id.removePrefix(UnifiedPrograms.GUIDED_PREFIX)) ?: continue
+                UnifiedPrograms.guidedSections(lesson).forEachIndexed { index, section ->
+                    speechSafeChapter(Beat(section.title,section.text,"Guided")).forEachIndexed { part, chunk ->
+                        result.add(Chunk(id,lesson.title,"guided:${lesson.id}:${index}:${part}",
+                            chunk.title,chunk.content))
+                    }
+                }
+                continue
+            }
             val authored = InstituteMaterials.lectures.firstOrNull { it.id == id }
             if (authored != null) {
                 authored.paragraphs.forEachIndexed { index, paragraph ->
-                    val sections = speechSafeChapter(Beat(
-                        "Part ${index+1}: ${authored.title}", paragraph, authored.type))
-                    sections.forEachIndexed { j, section ->
-                        result.add(Chunk(authored.id, authored.title,
-                            "${authored.id}:${index+1}:${j+1}", section.title, section.content))
+                    speechSafeChapter(Beat("Part ${index+1}: ${authored.title}",
+                        paragraph,authored.type)).forEachIndexed { j, chunk ->
+                        result.add(Chunk(authored.id,authored.title,
+                            "${authored.id}:${index+1}:${j+1}",chunk.title,chunk.content))
                     }
                 }
                 continue
             }
             val module=catalog.seminar(id) ?: continue
             for(chapter in module.chapters) {
-                val sections=speechSafeChapter(Beat(chapter.title,chapter.text,chapter.kind))
-                sections.forEach { section ->
-                    result.add(Chunk(module.id,module.title,chapter.id,section.title,section.content))
+                speechSafeChapter(Beat(chapter.title,chapter.text,chapter.kind)).forEach { chunk ->
+                    result.add(Chunk(module.id,module.title,chapter.id,chunk.title,chunk.content))
                 }
             }
         }
@@ -154,17 +216,22 @@ class SeminarPlaybackService : Service() {
         }.getOrDefault(emptyList())
     }
     private fun restore() {
+        listeningMode=prefs.getString("mode",UnifiedPrograms.LONG) ?: UnifiedPrograms.LONG
+        if(listeningMode==UnifiedPrograms.RADIO) readRadioDeck()
         modules=readSavedModules()
         chapters=buildQueue(modules)
         cursor=prefs.getInt("chunk",0).coerceIn(0,(chapters.size-1).coerceAtLeast(0))
     }
     private fun save() {
-        prefs.edit().putString("module_queue",JSONArray(modules).toString())
+        prefs.edit().putString("mode",listeningMode)
+            .putString("module_queue",JSONArray(modules).toString())
             .putInt("chunk",cursor).putLong("saved_at",System.currentTimeMillis())
             .putString("current_title",chapters.getOrNull(cursor)?.chapterTitle.orEmpty()).apply()
         sendBroadcast(Intent(ACTION_STATUS).setPackage(packageName)
             .putExtra(EXTRA_CHUNK,cursor).putExtra("total",chapters.size)
-            .putExtra("paused",paused))
+            .putExtra("paused",paused)
+            .putExtra("mode",listeningMode)
+            .putExtra("programme",chapters.getOrNull(cursor)?.moduleTitle.orEmpty()))
     }
 
     private fun requestFocus():Boolean {
@@ -202,7 +269,9 @@ class SeminarPlaybackService : Service() {
                     override fun onDone(utteranceId:String?) { handler.post {
                         if(generation==ttsGeneration && utteranceId==currentUtterance && active && !paused) {
                             currentUtterance=null;cursor++
-                            if(cursor>=chapters.size) stopRadio() else {save();speak()}
+                            if(cursor>=chapters.size) {
+                                if(advanceRadioBatch()) speak() else stopRadio()
+                            } else {save();speak()}
                         }
                     } }
                     @Deprecated("Deprecated in Java")
@@ -241,7 +310,14 @@ class SeminarPlaybackService : Service() {
     private fun advance(delta:Int) {
         if(chapters.isEmpty()) restore()
         if(chapters.isEmpty()) return
-        cursor=(cursor+delta).coerceIn(0,chapters.lastIndex)
+        cursor=if(listeningMode==UnifiedPrograms.RADIO) {
+            UnifiedPrograms.nextProgrammeIndex(chapters.map { it.moduleId },cursor,delta)
+        } else (cursor+delta).coerceIn(0,chapters.lastIndex)
+        if(delta>0 && cursor==chapters.lastIndex && listeningMode==UnifiedPrograms.RADIO) {
+            // A radio skip at the last programme opens the next shuffled batch.
+            val last=chapters.last().moduleId
+            if(chapters[cursor].moduleId==last) advanceRadioBatch()
+        }
         save()
         if(active && !paused) speak() else updateNotification()
     }
@@ -266,7 +342,8 @@ class SeminarPlaybackService : Service() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         val b=Notification.Builder(this,CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_media_play)
-            .setContentTitle(chapter?.moduleTitle ?: "PHENOMENA Great Seminar")
+            .setContentTitle(if(listeningMode==UnifiedPrograms.RADIO) "PHENOMENA · Radio — ${chapter?.moduleTitle ?: "Shuffling"}"
+                else chapter?.moduleTitle ?: "PHENOMENA Player")
             .setContentText(chapter?.chapterTitle ?: "Your listening queue")
             .setContentIntent(open).setOnlyAlertOnce(true)
             .setVisibility(Notification.VISIBILITY_PUBLIC).setOngoing(active && !paused)
