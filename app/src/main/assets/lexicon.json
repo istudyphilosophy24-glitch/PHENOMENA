@@ -1,0 +1,549 @@
+{
+  "terms": [
+    {
+      "id": "sein",
+      "title": "Being",
+      "original": "Sein",
+      "language": "German",
+      "definition": "That in terms of which entities are intelligible as beings; not itself another entity.",
+      "nuance": "The initial question of Being must not be confused with the existence of a supreme object.",
+      "relations": [
+        "seiendes",
+        "difference",
+        "ontology"
+      ],
+      "works": [
+        "heidegger"
+      ]
+    },
+    {
+      "id": "seiendes",
+      "title": "entity / being",
+      "original": "Seiendes",
+      "language": "German",
+      "definition": "Whatever is, considered as an entity; distinct in Heidegger’s analysis from Being.",
+      "nuance": "“Beings” and “entities” are translation strategies; each has virtues and costs.",
+      "relations": [
+        "sein",
+        "difference",
+        "ontic"
+      ],
+      "works": [
+        "heidegger"
+      ]
+    },
+    {
+      "id": "dasein",
+      "title": "Dasein",
+      "original": "Dasein",
+      "language": "German",
+      "definition": "The entity each of us is, for whom its Being is an issue.",
+      "nuance": "Literally there-being; not simply a Cartesian ego or biological human organism.",
+      "relations": [
+        "existence",
+        "worldhood",
+        "temporality",
+        "understanding"
+      ],
+      "works": [
+        "heidegger"
+      ]
+    },
+    {
+      "id": "ontic",
+      "title": "ontic",
+      "original": "ontisch",
+      "language": "German",
+      "definition": "Concerning factual entities and their determinate characteristics.",
+      "nuance": "The ontic/ontological contrast is methodological, not a ranking of dignity.",
+      "relations": [
+        "ontological",
+        "ontology",
+        "dasein"
+      ],
+      "works": [
+        "heidegger"
+      ]
+    },
+    {
+      "id": "ontological",
+      "title": "ontological",
+      "original": "ontologisch",
+      "language": "German",
+      "definition": "Concerning Being, modes of Being and their structures.",
+      "nuance": "Ontological analysis should not be confused with cataloguing properties.",
+      "relations": [
+        "ontic",
+        "ontology",
+        "difference"
+      ],
+      "works": [
+        "heidegger"
+      ]
+    },
+    {
+      "id": "difference",
+      "title": "ontological difference",
+      "original": "ontologische Differenz",
+      "language": "German",
+      "definition": "The distinction between Being and beings/entities.",
+      "nuance": "A central Heideggerian distinction, increasingly explicit in works beyond the introduction to Being and Time.",
+      "relations": [
+        "sein",
+        "seiendes",
+        "ontology"
+      ],
+      "works": [
+        "heidegger"
+      ]
+    },
+    {
+      "id": "ontology",
+      "title": "ontology",
+      "original": "Ontologie",
+      "language": "Greek / German",
+      "definition": "Inquiry into Being and the structures by which entities are intelligible.",
+      "nuance": "Fundamental ontology aims to clarify the horizon of the meaning of Being.",
+      "relations": [
+        "sein",
+        "ontological",
+        "dasein"
+      ],
+      "works": [
+        "heidegger",
+        "husserl"
+      ]
+    },
+    {
+      "id": "existence",
+      "title": "existence",
+      "original": "Existenz",
+      "language": "German",
+      "definition": "For Heidegger, the mode of Being in which Dasein lives its possibilities.",
+      "nuance": "Distinct from a bare fact that a thing occurs or is present.",
+      "relations": [
+        "dasein",
+        "everydayness",
+        "worldhood"
+      ],
+      "works": [
+        "heidegger"
+      ]
+    },
+    {
+      "id": "everydayness",
+      "title": "everydayness",
+      "original": "Alltäglichkeit",
+      "language": "German",
+      "definition": "The ordinary, average ways Dasein is engaged in its world.",
+      "nuance": "A methodological starting point, not merely an ethical criticism of daily routine.",
+      "relations": [
+        "dasein",
+        "worldhood",
+        "hermeneutic"
+      ],
+      "works": [
+        "heidegger"
+      ]
+    },
+    {
+      "id": "worldhood",
+      "title": "worldhood",
+      "original": "Weltlichkeit",
+      "language": "German",
+      "definition": "The existential structure of a meaningful world of references and involvement.",
+      "nuance": "Not simply the sum of all things in physical space.",
+      "relations": [
+        "dasein",
+        "lifeworld",
+        "understanding"
+      ],
+      "works": [
+        "heidegger",
+        "merleau"
+      ]
+    },
+    {
+      "id": "understanding",
+      "title": "understanding",
+      "original": "Verstehen",
+      "language": "German",
+      "definition": "Dasein’s projection of possibilities; an existential way of being able to be.",
+      "nuance": "More primary than a purely theoretical comprehension of propositions.",
+      "relations": [
+        "dasein",
+        "hermeneutic",
+        "existence"
+      ],
+      "works": [
+        "heidegger"
+      ]
+    },
+    {
+      "id": "temporality",
+      "title": "temporality",
+      "original": "Zeitlichkeit",
+      "language": "German",
+      "definition": "The ecstatic structure of Dasein’s Being developed as its ontological meaning.",
+      "nuance": "Not reducible to succession of now-points or clock time.",
+      "relations": [
+        "zeitlichkeit",
+        "temporalitat",
+        "dasein"
+      ],
+      "works": [
+        "heidegger"
+      ]
+    },
+    {
+      "id": "zeitlichkeit",
+      "title": "Zeitlichkeit",
+      "original": "Zeitlichkeit",
+      "language": "German",
+      "definition": "Temporality: the temporal structure of Dasein’s Being.",
+      "nuance": "Sometimes distinguished in translation from Temporalität, concerning Being as such.",
+      "relations": [
+        "temporality",
+        "temporalitat"
+      ],
+      "works": [
+        "heidegger"
+      ]
+    },
+    {
+      "id": "temporalitat",
+      "title": "Temporalität",
+      "original": "Temporalität",
+      "language": "German",
+      "definition": "The more general temporal horizon projected for interpreting the meaning of Being.",
+      "nuance": "Distinguish from Zeitlichkeit; the project is unfinished in the published Being and Time.",
+      "relations": [
+        "zeitlichkeit",
+        "sein"
+      ],
+      "works": [
+        "heidegger"
+      ]
+    },
+    {
+      "id": "destruktion",
+      "title": "Destruktion",
+      "original": "Destruktion",
+      "language": "German",
+      "definition": "Critical dismantling and retrieval of inherited ontological concepts.",
+      "nuance": "A constructive historical inquiry, not indiscriminate demolition.",
+      "relations": [
+        "ontology",
+        "hermeneutic"
+      ],
+      "works": [
+        "heidegger"
+      ]
+    },
+    {
+      "id": "phenomenon",
+      "title": "phenomenon",
+      "original": "φαινόμενον / Phänomen",
+      "language": "Greek / German",
+      "definition": "That which shows itself from itself; methodological focus of phenomenology.",
+      "nuance": "Heidegger distinguishes self-showing from merely seeming and from appearance as indication.",
+      "relations": [
+        "logos",
+        "hermeneutic"
+      ],
+      "works": [
+        "heidegger",
+        "husserl",
+        "merleau"
+      ]
+    },
+    {
+      "id": "logos",
+      "title": "logos",
+      "original": "λόγος",
+      "language": "Greek",
+      "definition": "Discourse or articulation; in Heidegger’s methodological account, letting something be seen.",
+      "nuance": "Its semantic range in Greek is considerably wider than any single English equivalent.",
+      "relations": [
+        "phenomenon",
+        "hermeneutic"
+      ],
+      "works": [
+        "heidegger"
+      ]
+    },
+    {
+      "id": "hermeneutic",
+      "title": "hermeneutics",
+      "original": "Hermeneutik",
+      "language": "Greek / German",
+      "definition": "Interpretation as the method through which structures of meaning are articulated.",
+      "nuance": "Foregrounding interpretation does not license unfalsifiable speculation.",
+      "relations": [
+        "understanding",
+        "destruktion"
+      ],
+      "works": [
+        "heidegger"
+      ]
+    },
+    {
+      "id": "intentionality",
+      "title": "intentionality",
+      "original": "Intentionalität",
+      "language": "German / Latin",
+      "definition": "The directedness of consciousness toward something as intended.",
+      "nuance": "Directedness is not necessarily a causal relation between two independent objects.",
+      "relations": [
+        "noesis",
+        "noema",
+        "constitution"
+      ],
+      "works": [
+        "husserl",
+        "heidegger"
+      ]
+    },
+    {
+      "id": "natural-attitude",
+      "title": "natural attitude",
+      "original": "natürliche Einstellung",
+      "language": "German",
+      "definition": "The everyday stance in which a surrounding world is tacitly taken to exist.",
+      "nuance": "Phenomenology describes rather than simply condemns this attitude.",
+      "relations": [
+        "epoche",
+        "reduction",
+        "lifeworld"
+      ],
+      "works": [
+        "husserl"
+      ]
+    },
+    {
+      "id": "epoche",
+      "title": "epoché",
+      "original": "ἐποχή",
+      "language": "Greek",
+      "definition": "Methodological suspension of the natural attitude’s existential positing.",
+      "nuance": "Bracketing is not a proof that the world fails to exist.",
+      "relations": [
+        "reduction",
+        "natural-attitude",
+        "transcendental"
+      ],
+      "works": [
+        "husserl"
+      ]
+    },
+    {
+      "id": "reduction",
+      "title": "phenomenological reduction",
+      "original": "phänomenologische Reduktion",
+      "language": "German",
+      "definition": "The methodological reorientation toward appearing and its intentional conditions.",
+      "nuance": "Multiple senses and stages occur throughout Husserl’s work.",
+      "relations": [
+        "epoche",
+        "transcendental",
+        "constitution"
+      ],
+      "works": [
+        "husserl",
+        "merleau"
+      ]
+    },
+    {
+      "id": "transcendental",
+      "title": "transcendental",
+      "original": "transzendental",
+      "language": "German",
+      "definition": "Concerning conditions of the possibility and intelligibility of experience and objectivity.",
+      "nuance": "Not synonymous with mystical or supernatural.",
+      "relations": [
+        "reduction",
+        "constitution",
+        "noesis"
+      ],
+      "works": [
+        "husserl"
+      ]
+    },
+    {
+      "id": "constitution",
+      "title": "constitution",
+      "original": "Konstitution",
+      "language": "German",
+      "definition": "Articulation of the structures through which object-sense and validity arise in intentional life.",
+      "nuance": "Does not straightforwardly mean physically creating objects.",
+      "relations": [
+        "intentionality",
+        "noesis",
+        "noema"
+      ],
+      "works": [
+        "husserl"
+      ]
+    },
+    {
+      "id": "noesis",
+      "title": "noesis",
+      "original": "νόησις",
+      "language": "Greek",
+      "definition": "Intentional lived act considered in its act-character.",
+      "nuance": "Distinguish from noema, the correlate as intended.",
+      "relations": [
+        "noema",
+        "intentionality",
+        "constitution"
+      ],
+      "works": [
+        "husserl"
+      ]
+    },
+    {
+      "id": "noema",
+      "title": "noema",
+      "original": "νόημα",
+      "language": "Greek",
+      "definition": "Object as intended in its sense and manner of givenness.",
+      "nuance": "Whether noema is content, object-as-intended or a special correlate is debated.",
+      "relations": [
+        "noesis",
+        "intentionality",
+        "horizon"
+      ],
+      "works": [
+        "husserl"
+      ]
+    },
+    {
+      "id": "horizon",
+      "title": "horizon",
+      "original": "Horizont",
+      "language": "German",
+      "definition": "The background of implicit co-intentions and possibilities accompanying what appears.",
+      "nuance": "Only one side of a material thing may be perceived while more is intended.",
+      "relations": [
+        "intentionality",
+        "noema",
+        "lifeworld"
+      ],
+      "works": [
+        "husserl",
+        "merleau"
+      ]
+    },
+    {
+      "id": "lifeworld",
+      "title": "lifeworld",
+      "original": "Lebenswelt",
+      "language": "German",
+      "definition": "World of everyday lived meaning prior to specialized theoretical abstractions.",
+      "nuance": "Especially prominent in Husserl’s later writings and related post-Husserlian thought.",
+      "relations": [
+        "natural-attitude",
+        "worldhood",
+        "lived-body"
+      ],
+      "works": [
+        "husserl",
+        "merleau"
+      ]
+    },
+    {
+      "id": "lived-body",
+      "title": "lived body",
+      "original": "corps propre",
+      "language": "French",
+      "definition": "The body as the situated subject of perception and action, not merely a physical object.",
+      "nuance": "Merleau-Ponty distinguishes lived corporeality from treating the body as inert thing.",
+      "relations": [
+        "perception",
+        "lifeworld",
+        "pre-reflective"
+      ],
+      "works": [
+        "merleau"
+      ]
+    },
+    {
+      "id": "perception",
+      "title": "perception",
+      "original": "perception",
+      "language": "French",
+      "definition": "Bodily openness to a meaningful field in Merleau-Ponty’s phenomenology.",
+      "nuance": "Not equivalent to passive reception of sensory data.",
+      "relations": [
+        "sensation",
+        "gestalt",
+        "lived-body"
+      ],
+      "works": [
+        "merleau"
+      ]
+    },
+    {
+      "id": "pre-reflective",
+      "title": "pre-reflective experience",
+      "original": "préréflexif",
+      "language": "French",
+      "definition": "Lived experience as operative before explicit reflective judgment.",
+      "nuance": "Prior does not have to mean temporally earlier.",
+      "relations": [
+        "lived-body",
+        "perception"
+      ],
+      "works": [
+        "merleau",
+        "husserl"
+      ]
+    },
+    {
+      "id": "sensation",
+      "title": "sensation",
+      "original": "sensation",
+      "language": "French",
+      "definition": "An allegedly elementary sensory unit criticized as the starting point of perception.",
+      "nuance": "Physiological input and phenomenal organization answer distinct questions.",
+      "relations": [
+        "gestalt",
+        "perception"
+      ],
+      "works": [
+        "merleau"
+      ]
+    },
+    {
+      "id": "gestalt",
+      "title": "Gestalt",
+      "original": "Gestalt",
+      "language": "German",
+      "definition": "Organized form or figure-ground structure irreducible to an inventory of atoms.",
+      "nuance": "A major influence from Gestalt psychology, transformed phenomenologically.",
+      "relations": [
+        "perception",
+        "sensation",
+        "attention"
+      ],
+      "works": [
+        "merleau"
+      ]
+    },
+    {
+      "id": "attention",
+      "title": "attention",
+      "original": "attention",
+      "language": "French",
+      "definition": "A transformation or reorganization of the perceptual field.",
+      "nuance": "Not merely a beam of awareness directed at fixed data.",
+      "relations": [
+        "perception",
+        "gestalt"
+      ],
+      "works": [
+        "merleau"
+      ]
+    }
+  ]
+}

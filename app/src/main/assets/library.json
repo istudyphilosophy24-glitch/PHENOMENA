@@ -1,0 +1,1410 @@
+{
+  "works": [
+    {
+      "id": "heidegger",
+      "author": "Martin Heidegger",
+      "title": "Being and Time",
+      "shortTitle": "BEING / TIME",
+      "year": "1927",
+      "color": "#183C35",
+      "description": "The question of Being, Dasein, worldhood, care, and temporality. Seven annotated introductory sections."
+    },
+    {
+      "id": "husserl",
+      "author": "Edmund Husserl",
+      "title": "Ideas I",
+      "shortTitle": "IDEAS / I",
+      "year": "1913",
+      "color": "#664E43",
+      "description": "The natural attitude, reduction, pure consciousness, and intentional structures. Four thematic sections."
+    },
+    {
+      "id": "merleau",
+      "author": "Maurice Merleau-Ponty",
+      "title": "Phenomenology of Perception",
+      "shortTitle": "PERCEPTION",
+      "year": "1945",
+      "color": "#465A70",
+      "description": "The body as subject, perceptual experience, and criticism of empiricism and intellectualism. Four introductory sections."
+    }
+  ],
+  "lessons": [
+    {
+      "id": "bt01",
+      "workId": "heidegger",
+      "section": "§1",
+      "title": "The Necessity of the Question of Being",
+      "minutes": 19,
+      "tags": [
+        "Being",
+        "method",
+        "ontological difference"
+      ],
+      "synopsis": "Heidegger argues that the question of the meaning of Being must be raised anew. Familiar objections—that Being is most universal, indefinable, or self-evident—do not answer the question.",
+      "exposition": "When we say that something is, we already operate with an understanding of Being. But using the word fluently is not the same as having an explicit interpretation of its meaning. Heidegger examines three traditional assumptions: Being is the most universal concept; it cannot be defined like an entity; and everyone already understands it. Each assumption discloses a difficulty, not a license to abandon the investigation. We should neither treat Being as a supreme object nor confuse everyday understanding with an ontological explanation.",
+      "advanced": "The alleged universality of Being is not the universality of a genus, since Being is not a highest class subsuming entities as species. Its indefinability follows from the inadequacy of entity-based definition, not the impossibility of all conceptual articulation. Pre-ontological familiarity is a starting condition that intensifies, rather than discharges, the explanatory burden.",
+      "scaffold": [
+        {
+          "title": "Everyday language",
+          "body": "We constantly speak of what is without explicitly clarifying what is meant by the is."
+        },
+        {
+          "title": "Entity versus Being",
+          "body": "An entity is something that is; Being concerns the intelligibility of entities as beings."
+        },
+        {
+          "title": "Three prejudices",
+          "body": "Most universal, indefinable, and self-evident: each hides the question rather than resolves it."
+        }
+      ],
+      "vocabulary": [
+        "sein",
+        "seiendes",
+        "ontic",
+        "ontological",
+        "difference"
+      ],
+      "argument": [
+        {
+          "title": "The puzzle",
+          "detail": "Our everyday discourse presupposes an understanding of Being.",
+          "kind": "premise"
+        },
+        {
+          "title": "The gap",
+          "detail": "Pre-understanding is not a conceptual account of what makes entities intelligible as beings.",
+          "kind": "premise"
+        },
+        {
+          "title": "The methodological demand",
+          "detail": "An explicit interrogation of the meaning of Being remains necessary.",
+          "kind": "conclusion"
+        }
+      ],
+      "example": "When you notice a damaged pen, you understand that it is there and cannot be used. But the pen and the meaning of its being-there or being-usable are not identical objects of inquiry.",
+      "critique": "One might object that the term Being is too thin to support an informative theory. Heidegger must show that analysis of modes of being reveals distinctions missed by an inventory of objects.",
+      "comparison": "Aristotle examines being in several senses; scholastic philosophy develops transcendental being; Kant asks about conditions of possible experience. Heidegger reopens rather than simply discards these projects.",
+      "seminar": "Begin with a deceptively simple sentence: the book is on the table. The copula is immediately understood; yet what does this understanding of is involve? Follow Heidegger through the three inherited prejudices and observe why none has solved the question.",
+      "debate": "Voice A: The ability to use the copula seems sufficient. Voice B: Practical success in language does not settle what understanding of Being makes that use possible.",
+      "beats": [
+        {
+          "title": "The central question",
+          "content": "Heidegger argues that the question of the meaning of Being must be raised anew. Familiar objections—that Being is most universal, indefinable, or self-evident—do not answer the question.",
+          "kind": "Orientation"
+        },
+        {
+          "title": "The puzzle",
+          "content": "Our everyday discourse presupposes an understanding of Being.",
+          "kind": "premise"
+        },
+        {
+          "title": "The gap",
+          "content": "Pre-understanding is not a conceptual account of what makes entities intelligible as beings.",
+          "kind": "premise"
+        },
+        {
+          "title": "The methodological demand",
+          "content": "An explicit interrogation of the meaning of Being remains necessary.",
+          "kind": "conclusion"
+        },
+        {
+          "title": "Worked phenomenological demonstration",
+          "content": "When you notice a damaged pen, you understand that it is there and cannot be used. But the pen and the meaning of its being-there or being-usable are not identical objects of inquiry.",
+          "kind": "Example"
+        },
+        {
+          "title": "Objections and qualifications",
+          "content": "One might object that the term Being is too thin to support an informative theory. Heidegger must show that analysis of modes of being reveals distinctions missed by an inventory of objects.",
+          "kind": "Objection"
+        }
+      ],
+      "sourceNote": "Original interpretive study guide, not the copyrighted source text. Consult an authorized edition for exact wording and pagination. Section divisions and translations vary by edition."
+    },
+    {
+      "id": "bt02",
+      "workId": "heidegger",
+      "section": "§2",
+      "title": "The Formal Structure of the Question",
+      "minutes": 20,
+      "tags": [
+        "questioning",
+        "Dasein",
+        "method"
+      ],
+      "synopsis": "A rigorous inquiry into Being must clarify what is asked about, what is interrogated, and what is to be found. The inquirer already possesses an indeterminate understanding of Being.",
+      "exposition": "Heidegger distinguishes three aspects of an inquiry. The question asks about Being; it interrogates entities insofar as they are; and it seeks the meaning of Being. Asking is itself a mode of the Being of a particular entity—Dasein. The inquiry therefore cannot pretend to begin from an entirely neutral place. It starts with a vague, operative understanding that must be made explicit.",
+      "advanced": "The circularity of inquiry is not a vicious derivation if preliminary understanding functions as a condition for determining the problem, while the analysis revises its initial interpretation. Questioning has an existential structure: the questioner belongs to the field of the question. This methodological reflexivity informs the entire project.",
+      "scaffold": [
+        {
+          "title": "Structure of a question",
+          "body": "Separate what is being asked about, what is interrogated, and what counts as the sought answer."
+        },
+        {
+          "title": "Pre-understanding",
+          "body": "You must understand enough about Being to ask about it, though not enough to answer."
+        },
+        {
+          "title": "Situated inquirer",
+          "body": "The act of asking is not outside existence; it is performed by Dasein."
+        }
+      ],
+      "vocabulary": [
+        "dasein",
+        "sein",
+        "seiendes",
+        "understanding",
+        "hermeneutic"
+      ],
+      "argument": [
+        {
+          "title": "Starting point",
+          "detail": "Questioning requires a provisional grasp of its subject.",
+          "kind": "premise"
+        },
+        {
+          "title": "Reflexivity",
+          "detail": "The question of Being is asked by an entity that already understands Being somehow.",
+          "kind": "premise"
+        },
+        {
+          "title": "Access route",
+          "detail": "Investigate that entity without mistaking the investigation for the whole answer.",
+          "kind": "conclusion"
+        }
+      ],
+      "example": "A learner asks what justice is because she already recognizes some instances as just or unjust. That preliminary discrimination guides inquiry without establishing a complete theory.",
+      "critique": "A critic may accuse the argument of circularity. The response is that a hermeneutic fore-understanding differs from assuming the proposition one sets out to prove.",
+      "comparison": "Husserl also examines how an inquiry reaches its objects, but Heidegger places additional emphasis on the Being of the questioning entity itself.",
+      "seminar": "We normally imagine a question as a sentence. Here it becomes an existential event: someone who already lives within an understanding of is asks about the meaning of is.",
+      "debate": "Voice A: Any inquiry that presupposes its object begs the question. Voice B: Presupposing access to a domain is not presupposing an exhaustive answer about it.",
+      "beats": [
+        {
+          "title": "The central question",
+          "content": "A rigorous inquiry into Being must clarify what is asked about, what is interrogated, and what is to be found. The inquirer already possesses an indeterminate understanding of Being.",
+          "kind": "Orientation"
+        },
+        {
+          "title": "Starting point",
+          "content": "Questioning requires a provisional grasp of its subject.",
+          "kind": "premise"
+        },
+        {
+          "title": "Reflexivity",
+          "content": "The question of Being is asked by an entity that already understands Being somehow.",
+          "kind": "premise"
+        },
+        {
+          "title": "Access route",
+          "content": "Investigate that entity without mistaking the investigation for the whole answer.",
+          "kind": "conclusion"
+        },
+        {
+          "title": "Worked phenomenological demonstration",
+          "content": "A learner asks what justice is because she already recognizes some instances as just or unjust. That preliminary discrimination guides inquiry without establishing a complete theory.",
+          "kind": "Example"
+        },
+        {
+          "title": "Objections and qualifications",
+          "content": "A critic may accuse the argument of circularity. The response is that a hermeneutic fore-understanding differs from assuming the proposition one sets out to prove.",
+          "kind": "Objection"
+        }
+      ],
+      "sourceNote": "Original interpretive study guide, not the copyrighted source text. Consult an authorized edition for exact wording and pagination. Section divisions and translations vary by edition."
+    },
+    {
+      "id": "bt03",
+      "workId": "heidegger",
+      "section": "§3",
+      "title": "The Ontological Priority of the Question",
+      "minutes": 17,
+      "tags": [
+        "ontology",
+        "science",
+        "regions"
+      ],
+      "synopsis": "Positive sciences investigate regions of entities, but their foundational concepts already presuppose interpretations of what kinds of entities these are. Ontology addresses that prior understanding.",
+      "exposition": "Biology investigates living things; mathematics addresses its own ideal objects; history studies historical events. Such enterprises rely on guiding categories that specify what counts as an entity in their region. Heidegger argues that these categories themselves can become problematic. The question of Being therefore has priority over the merely factual accumulation of results, without negating the sciences.",
+      "advanced": "Foundational crises reveal that regional ontologies are neither fixed nor methodologically innocent. The ontological question is prior in an order of intelligibility, not necessarily prior in chronological discovery or institutional authority.",
+      "scaffold": [
+        {
+          "title": "Regional sciences",
+          "body": "Each science organizes what it studies according to fundamental concepts."
+        },
+        {
+          "title": "A priori understanding",
+          "body": "Researchers have some sense of their object-domain before gathering facts."
+        },
+        {
+          "title": "Ontology",
+          "body": "Clarifies the modes and categories in virtue of which an object-domain makes sense."
+        }
+      ],
+      "vocabulary": [
+        "ontology",
+        "ontic",
+        "ontological",
+        "worldhood"
+      ],
+      "argument": [
+        {
+          "title": "Science has a domain",
+          "detail": "Scientific inquiry requires concepts that define its objects.",
+          "kind": "premise"
+        },
+        {
+          "title": "Foundations can shift",
+          "detail": "Those concepts can be transformed by foundational crises.",
+          "kind": "premise"
+        },
+        {
+          "title": "Priority",
+          "detail": "Clarifying their ontological presuppositions is a distinct and fundamental inquiry.",
+          "kind": "conclusion"
+        }
+      ],
+      "example": "A neuroscientist measures neural activity. A philosophical inquiry can ask how the brain is being conceived—as mechanism, living organ, or situated body—and what each conception makes visible.",
+      "critique": "Ontological clarification does not determine experimental findings. Priority should not be mistaken for a license to overrule empirical research.",
+      "comparison": "Kant investigates conditions of possible experience; Heidegger generalizes the foundational impulse while criticizing merely epistemological formulations.",
+      "seminar": "Different sciences reach different things only because their domains have already been opened in particular ways. The ontological question concerns this opening, not another empirical observation.",
+      "debate": "Voice A: Science progresses without metaphysics. Voice B: Success does not eliminate the philosophical question of how its objects are delimited.",
+      "beats": [
+        {
+          "title": "The central question",
+          "content": "Positive sciences investigate regions of entities, but their foundational concepts already presuppose interpretations of what kinds of entities these are. Ontology addresses that prior understanding.",
+          "kind": "Orientation"
+        },
+        {
+          "title": "Science has a domain",
+          "content": "Scientific inquiry requires concepts that define its objects.",
+          "kind": "premise"
+        },
+        {
+          "title": "Foundations can shift",
+          "content": "Those concepts can be transformed by foundational crises.",
+          "kind": "premise"
+        },
+        {
+          "title": "Priority",
+          "content": "Clarifying their ontological presuppositions is a distinct and fundamental inquiry.",
+          "kind": "conclusion"
+        },
+        {
+          "title": "Worked phenomenological demonstration",
+          "content": "A neuroscientist measures neural activity. A philosophical inquiry can ask how the brain is being conceived—as mechanism, living organ, or situated body—and what each conception makes visible.",
+          "kind": "Example"
+        },
+        {
+          "title": "Objections and qualifications",
+          "content": "Ontological clarification does not determine experimental findings. Priority should not be mistaken for a license to overrule empirical research.",
+          "kind": "Objection"
+        }
+      ],
+      "sourceNote": "Original interpretive study guide, not the copyrighted source text. Consult an authorized edition for exact wording and pagination. Section divisions and translations vary by edition."
+    },
+    {
+      "id": "bt04",
+      "workId": "heidegger",
+      "section": "§4",
+      "title": "The Ontic Priority of the Question",
+      "minutes": 21,
+      "tags": [
+        "existence",
+        "Dasein",
+        "understanding"
+      ],
+      "synopsis": "Dasein is distinctive because its own Being matters to it. Its existence includes a pre-ontological understanding of Being, which makes Dasein the privileged starting point for the inquiry.",
+      "exposition": "Unlike a stone considered as an object, Dasein lives out possibilities and is concerned with what it is to be. Heidegger does not say that Dasein alone exists; he claims its relation to Being differs. Dasein has an ontic priority by virtue of its mode of existence, an ontological priority by already understanding Being, and an ontico-ontological role as a condition of access to other ontologies.",
+      "advanced": "The privileges are methodological and structural, not an assertion of moral superiority or that entities depend causally on human individuals. The existential analytic must describe modes of Being that cannot be reduced to present-at-hand properties of a psychological subject.",
+      "scaffold": [
+        {
+          "title": "Ontic",
+          "body": "Concerns the facticity and characteristics of entities."
+        },
+        {
+          "title": "Existence",
+          "body": "For Heidegger, Dasein has to be its Being by living possibilities."
+        },
+        {
+          "title": "Ontico-ontological",
+          "body": "Dasein is an entity that already relates to what Being means."
+        }
+      ],
+      "vocabulary": [
+        "dasein",
+        "existence",
+        "ontic",
+        "ontological",
+        "understanding"
+      ],
+      "argument": [
+        {
+          "title": "Specificity",
+          "detail": "Dasein exists in a way in which its Being is at stake.",
+          "kind": "premise"
+        },
+        {
+          "title": "Understanding",
+          "detail": "This mode includes a preconceptual relation to Being.",
+          "kind": "premise"
+        },
+        {
+          "title": "Point of entry",
+          "detail": "The Being of the questioner provides an appropriate initial field of analysis.",
+          "kind": "conclusion"
+        }
+      ],
+      "example": "Choosing to become a teacher, a friend, or a philosopher is not simply cataloguing internal properties; the possibilities matter in your ongoing existence.",
+      "critique": "The account risks anthropocentrism unless carefully distinguished from the claim that other entities exist only when humans recognize them.",
+      "comparison": "Sartre later emphasizes existence and freedom, whereas Heidegger avoids beginning with a sovereign self-constituting consciousness.",
+      "seminar": "Dasein is not simply a sophisticated name for human organism. It marks an entity whose Being involves a concern with that Being, and therefore an opening onto the question.",
+      "debate": "Voice A: This is disguised philosophical anthropology. Voice B: The project examines the structure of existential disclosure, not a list of human traits.",
+      "beats": [
+        {
+          "title": "The central question",
+          "content": "Dasein is distinctive because its own Being matters to it. Its existence includes a pre-ontological understanding of Being, which makes Dasein the privileged starting point for the inquiry.",
+          "kind": "Orientation"
+        },
+        {
+          "title": "Specificity",
+          "content": "Dasein exists in a way in which its Being is at stake.",
+          "kind": "premise"
+        },
+        {
+          "title": "Understanding",
+          "content": "This mode includes a preconceptual relation to Being.",
+          "kind": "premise"
+        },
+        {
+          "title": "Point of entry",
+          "content": "The Being of the questioner provides an appropriate initial field of analysis.",
+          "kind": "conclusion"
+        },
+        {
+          "title": "Worked phenomenological demonstration",
+          "content": "Choosing to become a teacher, a friend, or a philosopher is not simply cataloguing internal properties; the possibilities matter in your ongoing existence.",
+          "kind": "Example"
+        },
+        {
+          "title": "Objections and qualifications",
+          "content": "The account risks anthropocentrism unless carefully distinguished from the claim that other entities exist only when humans recognize them.",
+          "kind": "Objection"
+        }
+      ],
+      "sourceNote": "Original interpretive study guide, not the copyrighted source text. Consult an authorized edition for exact wording and pagination. Section divisions and translations vary by edition."
+    },
+    {
+      "id": "bt05",
+      "workId": "heidegger",
+      "section": "§5",
+      "title": "The Ontological Analytic of Dasein",
+      "minutes": 29,
+      "tags": [
+        "Dasein",
+        "temporality",
+        "method"
+      ],
+      "synopsis": "The analytic of Dasein prepares the inquiry into the meaning of Being. Although Dasein is ontically closest to us, its Being is not already ontologically transparent; temporality will prove decisive.",
+      "exposition": "The entity that asks about Being must itself be investigated. Yet Dasein cannot be taken as self-evident merely because each of us is it. Everyday familiarity may conceal the existential structures that make self-understanding possible. An analysis of Dasein begins from ordinary being-in-the-world rather than from an idealized theory of isolated consciousness. The investigation anticipates an interpretation of time: temporality is developed as the meaning of Dasein’s Being, making possible a renewed approach to Being in general. This is a preparatory analytic; it does not itself provide a complete answer to the general question.",
+      "advanced": "The key methodological asymmetry is between ontic proximity and ontological remoteness. Pre-ontological self-understanding does not transparently yield existentialia. Moreover, Zeitlichkeit, the temporality of Dasein, must be distinguished from the broader Temporalität envisaged as a horizon for interpreting Being as such. The unfinished published project should not be retroactively treated as having delivered this final derivation.",
+      "scaffold": [
+        {
+          "title": "Dasein first",
+          "body": "The questioner is itself a being whose understanding of Being is at issue."
+        },
+        {
+          "title": "Familiar is not understood",
+          "body": "We are close to our own lives without articulating their existential conditions."
+        },
+        {
+          "title": "Begin with everydayness",
+          "body": "The ordinary way we find ourselves engaged in the world provides access."
+        },
+        {
+          "title": "Time as horizon",
+          "body": "Heidegger aims to make the connection between the Being of Dasein and temporality explicit."
+        }
+      ],
+      "vocabulary": [
+        "dasein",
+        "ontic",
+        "ontological",
+        "temporality",
+        "everydayness",
+        "worldhood",
+        "zeitlichkeit",
+        "temporalitat"
+      ],
+      "argument": [
+        {
+          "title": "Initial access",
+          "detail": "Dasein already operates with an understanding of Being.",
+          "kind": "premise"
+        },
+        {
+          "title": "Concealment",
+          "detail": "Its everyday self-familiarity does not reveal the structures of its Being.",
+          "kind": "problem"
+        },
+        {
+          "title": "Analytic task",
+          "detail": "Interpret Dasein’s basic existential structures without importing a theory of substance or subject.",
+          "kind": "method"
+        },
+        {
+          "title": "Temporal horizon",
+          "detail": "Investigate temporality as the meaning of Dasein’s Being and a possible horizon for the question of Being.",
+          "kind": "conclusion"
+        }
+      ],
+      "example": "When you are absorbed in reading, you do not encounter yourself as a detached mental substance inspecting perceptions. You already inhabit a meaningful world of tasks, expectations, references and possibilities. Reflecting on this immersion may disclose structures missed by ordinary self-description.",
+      "critique": "A Husserlian might object that the analysis still relies on intentional consciousness but obscures the transcendental reduction. An analytic philosopher may question how claims about existential structures are warranted by everyday examples. Neither objection is dissolved merely by renaming subjectivity as Dasein.",
+      "comparison": "Husserl privileges transcendental subjectivity as the field of constitution; Heidegger argues that a prior understanding of being-in-the-world cannot simply be construed as a relation between two present-at-hand poles. Their accounts share phenomenological commitments but differ in method and aim.",
+      "seminar": "Why begin with Dasein? Because questioning is something Dasein does, and because its own existence already involves Being as a concern. But ontic nearness is not ontological disclosure. Heidegger’s next move is not to catalogue mental events; it is to reveal the structures of ordinary being-in-the-world. The decisive long-term clue is temporality—yet this is a path of inquiry, not an argument already completed in section five.",
+      "debate": "Voice A (transcendental): Every appearance is appearance for consciousness; clarify constituting subjectivity first. Voice B (hermeneutic): The supposedly isolated subject is already worldly; begin with practical existence. Moderator: Explain why either point of departure should have priority.",
+      "beats": [
+        {
+          "title": "The central question",
+          "content": "The analytic of Dasein prepares the inquiry into the meaning of Being. Although Dasein is ontically closest to us, its Being is not already ontologically transparent; temporality will prove decisive.",
+          "kind": "Orientation"
+        },
+        {
+          "title": "Initial access",
+          "content": "Dasein already operates with an understanding of Being.",
+          "kind": "premise"
+        },
+        {
+          "title": "Concealment",
+          "content": "Its everyday self-familiarity does not reveal the structures of its Being.",
+          "kind": "problem"
+        },
+        {
+          "title": "Analytic task",
+          "content": "Interpret Dasein’s basic existential structures without importing a theory of substance or subject.",
+          "kind": "method"
+        },
+        {
+          "title": "Temporal horizon",
+          "content": "Investigate temporality as the meaning of Dasein’s Being and a possible horizon for the question of Being.",
+          "kind": "conclusion"
+        },
+        {
+          "title": "Worked phenomenological demonstration",
+          "content": "When you are absorbed in reading, you do not encounter yourself as a detached mental substance inspecting perceptions. You already inhabit a meaningful world of tasks, expectations, references and possibilities. Reflecting on this immersion may disclose structures missed by ordinary self-description.",
+          "kind": "Example"
+        },
+        {
+          "title": "Objections and qualifications",
+          "content": "A Husserlian might object that the analysis still relies on intentional consciousness but obscures the transcendental reduction. An analytic philosopher may question how claims about existential structures are warranted by everyday examples. Neither objection is dissolved merely by renaming subjectivity as Dasein.",
+          "kind": "Objection"
+        }
+      ],
+      "sourceNote": "Original interpretive study guide, not the copyrighted source text. Consult an authorized edition for exact wording and pagination. Section divisions and translations vary by edition."
+    },
+    {
+      "id": "bt06",
+      "workId": "heidegger",
+      "section": "§6",
+      "title": "The Task of Destructuring the History of Ontology",
+      "minutes": 22,
+      "tags": [
+        "history",
+        "destruction",
+        "tradition"
+      ],
+      "synopsis": "Heidegger proposes critically retrieving the history of ontology so inherited concepts cease to conceal the original experiences from which they arose.",
+      "exposition": "Philosophical concepts have histories. Heidegger argues that tradition transmits answers that can harden into unquestioned assumptions. His proposed Destruktion is a positive, historical dismantling of those layers, not simple destruction or dismissal of past thinkers. Working backward through inherited categories is meant to recover the questions that once animated them—especially regarding time and Being.",
+      "advanced": "The historical operation is inseparable from the existential analytic because Dasein understands itself through tradition. Repetition and retrieval are not nostalgic restoration of an original doctrine: they aim to free possibilities for genuinely renewed questioning.",
+      "scaffold": [
+        {
+          "title": "Tradition",
+          "body": "Inherited categories can guide thought while simultaneously limiting it."
+        },
+        {
+          "title": "Destruktion",
+          "body": "A critical deconstruction of conceptual sedimentation."
+        },
+        {
+          "title": "Retrieval",
+          "body": "Reactivating the problems hidden beneath apparently settled doctrines."
+        }
+      ],
+      "vocabulary": [
+        "destruktion",
+        "ontology",
+        "temporality",
+        "hermeneutic"
+      ],
+      "argument": [
+        {
+          "title": "Inheritance",
+          "detail": "Ontological language reaches us through historical interpretation.",
+          "kind": "premise"
+        },
+        {
+          "title": "Sedimentation",
+          "detail": "Received formulations can obscure their originating problems.",
+          "kind": "problem"
+        },
+        {
+          "title": "Critical retrieval",
+          "detail": "Interpret those formations to reopen the concealed questions.",
+          "kind": "conclusion"
+        }
+      ],
+      "example": "Take substance. Its meanings shift from Aristotle through modern philosophy. Simply importing the word into a study of Dasein can install an interpretation before the phenomena have been examined.",
+      "critique": "Historical retrieval can romanticize origins or read the tradition selectively; each interpretation needs philological evidence and a defensible conceptual argument.",
+      "comparison": "Derrida transforms the vocabulary of deconstruction while questioning metaphysical presence; Gadamer emphasizes effective history and interpretive belonging.",
+      "seminar": "Destruktion is not a bonfire of books. It is the attempt to make the histories contained in our concepts visible and to revive the questions those concepts once answered.",
+      "debate": "Voice A: A rigorous ontology should simply discard history. Voice B: Our most basic categories are themselves historical inheritances, so ignoring that history leaves it operative but unexamined.",
+      "beats": [
+        {
+          "title": "The central question",
+          "content": "Heidegger proposes critically retrieving the history of ontology so inherited concepts cease to conceal the original experiences from which they arose.",
+          "kind": "Orientation"
+        },
+        {
+          "title": "Inheritance",
+          "content": "Ontological language reaches us through historical interpretation.",
+          "kind": "premise"
+        },
+        {
+          "title": "Sedimentation",
+          "content": "Received formulations can obscure their originating problems.",
+          "kind": "problem"
+        },
+        {
+          "title": "Critical retrieval",
+          "content": "Interpret those formations to reopen the concealed questions.",
+          "kind": "conclusion"
+        },
+        {
+          "title": "Worked phenomenological demonstration",
+          "content": "Take substance. Its meanings shift from Aristotle through modern philosophy. Simply importing the word into a study of Dasein can install an interpretation before the phenomena have been examined.",
+          "kind": "Example"
+        },
+        {
+          "title": "Objections and qualifications",
+          "content": "Historical retrieval can romanticize origins or read the tradition selectively; each interpretation needs philological evidence and a defensible conceptual argument.",
+          "kind": "Objection"
+        }
+      ],
+      "sourceNote": "Original interpretive study guide, not the copyrighted source text. Consult an authorized edition for exact wording and pagination. Section divisions and translations vary by edition."
+    },
+    {
+      "id": "bt07",
+      "workId": "heidegger",
+      "section": "§7",
+      "title": "The Phenomenological Method of Investigation",
+      "minutes": 27,
+      "tags": [
+        "phenomenology",
+        "logos",
+        "method"
+      ],
+      "synopsis": "Phenomenology describes what shows itself as it shows itself. Heidegger reconstructs phenomenon and logos to define an approach suited to investigating Being.",
+      "exposition": "Heidegger examines phainomenon as what shows itself and logos as a letting-be-seen through discourse. A phenomenon is not simply a fleeting subjective appearance, and phenomenology is not a doctrine about a particular set of objects. Its formal aim is to make manifest what ordinarily remains hidden. Because Being can conceal itself in the very appearance of entities, phenomenology provides the method demanded by fundamental ontology.",
+      "advanced": "The distinction between showing-itself, seeming and appearance is crucial: something can appear by announcing something that does not show itself directly, and things can disguise themselves. Heidegger’s hermeneutic phenomenology thus requires interpretation rather than assuming unmediated givenness. Ontology is possible only as phenomenology is his methodological thesis, not an empirically proven identity.",
+      "scaffold": [
+        {
+          "title": "Phenomenon",
+          "body": "What shows itself from itself, not a mere impression sealed inside consciousness."
+        },
+        {
+          "title": "Logos",
+          "body": "Discourse that lets something be seen through articulation."
+        },
+        {
+          "title": "Hermeneutics",
+          "body": "Interpretation is central where the phenomenon is covered over."
+        }
+      ],
+      "vocabulary": [
+        "phenomenon",
+        "logos",
+        "hermeneutic",
+        "worldhood",
+        "intentionality"
+      ],
+      "argument": [
+        {
+          "title": "Being is concealed",
+          "detail": "Structures of Being are not simply encountered as additional objects.",
+          "kind": "problem"
+        },
+        {
+          "title": "Showing",
+          "detail": "Phenomenology attends to the way something comes to manifestation.",
+          "kind": "method"
+        },
+        {
+          "title": "Interpretation",
+          "detail": "An interpretive unveiling is necessary when what matters is covered over.",
+          "kind": "conclusion"
+        }
+      ],
+      "example": "A hammer ordinarily shows itself through hammering, within a field of references, rather than as an isolated bundle of color, weight and shape. This later analysis illustrates a distinction anticipated by the method.",
+      "critique": "One objection is that interpretation may smuggle theory into description. The methodological reply must include interpretive discipline, revisability and comparative phenomenological evidence.",
+      "comparison": "Husserl uses phenomenology to analyze the structures of intentional consciousness via reduction; Heidegger redirects it toward the disclosure of Being in existence.",
+      "seminar": "Phenomenology is a demand: show how the matter gives itself, rather than allowing an inherited conceptual system to legislate its appearance in advance.",
+      "debate": "Voice A: Pure description is impossible without prior concepts. Voice B: This is why description must be hermeneutically self-critical rather than naive.",
+      "beats": [
+        {
+          "title": "The central question",
+          "content": "Phenomenology describes what shows itself as it shows itself. Heidegger reconstructs phenomenon and logos to define an approach suited to investigating Being.",
+          "kind": "Orientation"
+        },
+        {
+          "title": "Being is concealed",
+          "content": "Structures of Being are not simply encountered as additional objects.",
+          "kind": "problem"
+        },
+        {
+          "title": "Showing",
+          "content": "Phenomenology attends to the way something comes to manifestation.",
+          "kind": "method"
+        },
+        {
+          "title": "Interpretation",
+          "content": "An interpretive unveiling is necessary when what matters is covered over.",
+          "kind": "conclusion"
+        },
+        {
+          "title": "Worked phenomenological demonstration",
+          "content": "A hammer ordinarily shows itself through hammering, within a field of references, rather than as an isolated bundle of color, weight and shape. This later analysis illustrates a distinction anticipated by the method.",
+          "kind": "Example"
+        },
+        {
+          "title": "Objections and qualifications",
+          "content": "One objection is that interpretation may smuggle theory into description. The methodological reply must include interpretive discipline, revisability and comparative phenomenological evidence.",
+          "kind": "Objection"
+        }
+      ],
+      "sourceNote": "Original interpretive study guide, not the copyrighted source text. Consult an authorized edition for exact wording and pagination. Section divisions and translations vary by edition."
+    },
+    {
+      "id": "id01",
+      "workId": "husserl",
+      "section": "§§27–30",
+      "title": "The World of the Natural Attitude",
+      "minutes": 25,
+      "tags": [
+        "natural attitude",
+        "world",
+        "intentionality"
+      ],
+      "synopsis": "Everyday life proceeds within a taken-for-granted world that exists for us before philosophical reflection. Husserl makes this natural attitude itself a topic of description.",
+      "exposition": "In ordinary experience, the world is simply there: things are encountered as existing, other people inhabit a shared environment, and unfamiliar horizons extend beyond what is directly given. Husserl does not initially deny this world. He describes the basic general thesis by which we take it to exist. To investigate consciousness rigorously, that unexamined positing of reality must become philosophically visible.",
+      "advanced": "The world-horizon exceeds any punctual perception; adumbrations present objects through partial profiles within an anticipated unity. The general thesis is not an inferential belief repeatedly made explicit, but a tacit position operative in normal experience.",
+      "scaffold": [
+        {
+          "title": "Everyday certainty",
+          "body": "We behave as if the world is straightforwardly there for us."
+        },
+        {
+          "title": "Horizon",
+          "body": "More is meant than presently perceived."
+        },
+        {
+          "title": "Thesis",
+          "body": "Taking the world as existing is implicit in ordinary experience."
+        }
+      ],
+      "vocabulary": [
+        "natural-attitude",
+        "intentionality",
+        "horizon",
+        "constitution",
+        "noema"
+      ],
+      "argument": [
+        {
+          "title": "Description",
+          "detail": "Natural experience posits an independently existing world.",
+          "kind": "premise"
+        },
+        {
+          "title": "Concealed presupposition",
+          "detail": "This positing normally goes unexamined.",
+          "kind": "problem"
+        },
+        {
+          "title": "Phenomenological motivation",
+          "detail": "The attitude itself can become an explicit research theme.",
+          "kind": "conclusion"
+        }
+      ],
+      "example": "You see one side of a cup but intend a whole cup. The unseen back is not a current visual sensation, yet belongs to how the cup is experienced as a worldly thing.",
+      "critique": "A realist may ask whether this project replaces the real world with mental contents. At this stage, describing the thesis is not the same as rejecting its truth.",
+      "comparison": "Heidegger questions whether the natural attitude is the most primordial starting point; Merleau-Ponty emphasizes lived bodily involvement within the perceptual field.",
+      "seminar": "The natural attitude is not a mistake. It is the unreflective manner in which a surrounding world is present to us—a presence phenomenology will learn to examine.",
+      "debate": "Voice A: The world simply exists. Voice B: Phenomenology does not begin by denying that; it asks how the thesis of existence functions in experience.",
+      "beats": [
+        {
+          "title": "The central question",
+          "content": "Everyday life proceeds within a taken-for-granted world that exists for us before philosophical reflection. Husserl makes this natural attitude itself a topic of description.",
+          "kind": "Orientation"
+        },
+        {
+          "title": "Description",
+          "content": "Natural experience posits an independently existing world.",
+          "kind": "premise"
+        },
+        {
+          "title": "Concealed presupposition",
+          "content": "This positing normally goes unexamined.",
+          "kind": "problem"
+        },
+        {
+          "title": "Phenomenological motivation",
+          "content": "The attitude itself can become an explicit research theme.",
+          "kind": "conclusion"
+        },
+        {
+          "title": "Worked phenomenological demonstration",
+          "content": "You see one side of a cup but intend a whole cup. The unseen back is not a current visual sensation, yet belongs to how the cup is experienced as a worldly thing.",
+          "kind": "Example"
+        },
+        {
+          "title": "Objections and qualifications",
+          "content": "A realist may ask whether this project replaces the real world with mental contents. At this stage, describing the thesis is not the same as rejecting its truth.",
+          "kind": "Objection"
+        }
+      ],
+      "sourceNote": "Original interpretive study guide, not the copyrighted source text. Consult an authorized edition for exact wording and pagination. Section divisions and translations vary by edition."
+    },
+    {
+      "id": "id02",
+      "workId": "husserl",
+      "section": "§§31–32",
+      "title": "The Epoché and the Phenomenological Reduction",
+      "minutes": 29,
+      "tags": [
+        "epoché",
+        "reduction",
+        "method"
+      ],
+      "synopsis": "Husserl proposes suspending participation in the natural attitude’s general thesis to investigate experiences and their meaning without relying on ordinary assertions about worldly existence.",
+      "exposition": "The epoché is a methodological bracketing: instead of accepting or rejecting worldly existence, the phenomenologist refrains from using its thesis as a premise. Attention can then turn to how things are given and meant in consciousness. This is neither skeptical disbelief nor the psychological claim that only mental images exist. It inaugurates the path toward transcendental phenomenological investigation.",
+      "advanced": "Different senses and stages of reduction are discussed across Husserl’s corpus. The epoché does not abolish the object-intentional correlation; it transforms its investigative status. One must distinguish the suspension of an existential commitment from a metaphysical denial and from a simple inward turn toward empirical mental events.",
+      "scaffold": [
+        {
+          "title": "Bracketing",
+          "body": "Suspend the use of existence claims as presuppositions."
+        },
+        {
+          "title": "Intentional field",
+          "body": "Describe how the object is intended and given."
+        },
+        {
+          "title": "Transcendental shift",
+          "body": "Investigate conditions and structures of appearing."
+        }
+      ],
+      "vocabulary": [
+        "epoche",
+        "reduction",
+        "intentionality",
+        "transcendental",
+        "natural-attitude"
+      ],
+      "argument": [
+        {
+          "title": "Natural thesis",
+          "detail": "We customarily posit the world as existent.",
+          "kind": "premise"
+        },
+        {
+          "title": "Methodological shift",
+          "detail": "Put the positing out of play without denying the world.",
+          "kind": "method"
+        },
+        {
+          "title": "New field",
+          "detail": "Study conscious life and objectivity as correlated in experience.",
+          "kind": "conclusion"
+        }
+      ],
+      "example": "Consider a house viewed from the street. Instead of asking whether it exists, analyze the changing profiles, hidden sides, expectations, and identity through which it is experienced as that house.",
+      "critique": "The major worry is whether the reduction can truly escape natural presuppositions or whether the transcendental ego is an unargued metaphysical posit.",
+      "comparison": "Heidegger challenges the methodological primacy of reduction and considers the subject always already involved in a world of practical concern.",
+      "seminar": "The epoché is not the assertion that the world has disappeared. It is the discipline of refusing to let the ordinary existential thesis dictate the terms of phenomenological analysis.",
+      "debate": "Voice A: Bracketing reality is impossible and incoherent. Voice B: What is suspended is a justificatory commitment, not the occurrence of worldly experience.",
+      "beats": [
+        {
+          "title": "The central question",
+          "content": "Husserl proposes suspending participation in the natural attitude’s general thesis to investigate experiences and their meaning without relying on ordinary assertions about worldly existence.",
+          "kind": "Orientation"
+        },
+        {
+          "title": "Natural thesis",
+          "content": "We customarily posit the world as existent.",
+          "kind": "premise"
+        },
+        {
+          "title": "Methodological shift",
+          "content": "Put the positing out of play without denying the world.",
+          "kind": "method"
+        },
+        {
+          "title": "New field",
+          "content": "Study conscious life and objectivity as correlated in experience.",
+          "kind": "conclusion"
+        },
+        {
+          "title": "Worked phenomenological demonstration",
+          "content": "Consider a house viewed from the street. Instead of asking whether it exists, analyze the changing profiles, hidden sides, expectations, and identity through which it is experienced as that house.",
+          "kind": "Example"
+        },
+        {
+          "title": "Objections and qualifications",
+          "content": "The major worry is whether the reduction can truly escape natural presuppositions or whether the transcendental ego is an unargued metaphysical posit.",
+          "kind": "Objection"
+        }
+      ],
+      "sourceNote": "Original interpretive study guide, not the copyrighted source text. Consult an authorized edition for exact wording and pagination. Section divisions and translations vary by edition."
+    },
+    {
+      "id": "id03",
+      "workId": "husserl",
+      "section": "§§33–35",
+      "title": "Pure Consciousness as Phenomenological Residuum",
+      "minutes": 23,
+      "tags": [
+        "transcendental",
+        "consciousness",
+        "constitution"
+      ],
+      "synopsis": "After the reduction, Husserl seeks to characterize the field of pure consciousness and its essential structures as a distinctive field of phenomenological research.",
+      "exposition": "Natural science treats conscious acts as events in a person within the world. The reduction shifts attention from those empirical coordinates to the structure of lived experience and how objectivity is intended. Husserl describes the remaining field as pure or transcendental consciousness; this does not mean that empirical psychology can replace phenomenology or that worldly things are merely private images.",
+      "advanced": "The language of residuum invites misreadings as an ontological subtraction of the world. Better understood methodologically, the reduction uncovers a domain of investigation irreducible to straightforward naturalistic explanation. The status of transcendental idealism remains a live interpretative dispute.",
+      "scaffold": [
+        {
+          "title": "Empirical consciousness",
+          "body": "Mental life as investigated within the natural world."
+        },
+        {
+          "title": "Pure consciousness",
+          "body": "The reduced field of experience considered in its phenomenological structure."
+        },
+        {
+          "title": "Constitution",
+          "body": "The articulated ways object-sense and validity arise in conscious life."
+        }
+      ],
+      "vocabulary": [
+        "transcendental",
+        "constitution",
+        "reduction",
+        "intentionality",
+        "noesis"
+      ],
+      "argument": [
+        {
+          "title": "Reduction",
+          "detail": "Natural commitments are bracketed.",
+          "kind": "method"
+        },
+        {
+          "title": "Phenomenal field",
+          "detail": "Lived experiences remain describable in their essential structures.",
+          "kind": "premise"
+        },
+        {
+          "title": "Research program",
+          "detail": "Analyze intentional constitution without equating it to empirical psychology.",
+          "kind": "conclusion"
+        }
+      ],
+      "example": "Pain is not only a neural episode under a natural-scientific description; its first-person felt mode and temporal articulation become phenomenological themes.",
+      "critique": "Critics contest whether the pure ego is adequately demonstrated and whether the shift retains the full worldly and intersubjective character of experience.",
+      "comparison": "Sartre resists a substantive transcendental ego in his early account of consciousness; Heidegger shifts to the existential analytic of Dasein.",
+      "seminar": "What remains after bracketing? Not a tiny object called consciousness inside the skull, but experience as a field whose structures can be investigated in their own right.",
+      "debate": "Voice A: Pure consciousness is a metaphysical invention. Voice B: Distinguish an allegedly independent substance from a methodologically constituted field of evidence.",
+      "beats": [
+        {
+          "title": "The central question",
+          "content": "After the reduction, Husserl seeks to characterize the field of pure consciousness and its essential structures as a distinctive field of phenomenological research.",
+          "kind": "Orientation"
+        },
+        {
+          "title": "Reduction",
+          "content": "Natural commitments are bracketed.",
+          "kind": "method"
+        },
+        {
+          "title": "Phenomenal field",
+          "content": "Lived experiences remain describable in their essential structures.",
+          "kind": "premise"
+        },
+        {
+          "title": "Research program",
+          "content": "Analyze intentional constitution without equating it to empirical psychology.",
+          "kind": "conclusion"
+        },
+        {
+          "title": "Worked phenomenological demonstration",
+          "content": "Pain is not only a neural episode under a natural-scientific description; its first-person felt mode and temporal articulation become phenomenological themes.",
+          "kind": "Example"
+        },
+        {
+          "title": "Objections and qualifications",
+          "content": "Critics contest whether the pure ego is adequately demonstrated and whether the shift retains the full worldly and intersubjective character of experience.",
+          "kind": "Objection"
+        }
+      ],
+      "sourceNote": "Original interpretive study guide, not the copyrighted source text. Consult an authorized edition for exact wording and pagination. Section divisions and translations vary by edition."
+    },
+    {
+      "id": "id04",
+      "workId": "husserl",
+      "section": "§§84–90",
+      "title": "Intentionality, Noesis and Noema",
+      "minutes": 31,
+      "tags": [
+        "intentionality",
+        "noesis",
+        "noema"
+      ],
+      "synopsis": "Consciousness is consciousness of something; Husserl analyzes the relation between intentional acts and their object-sense using the distinction between noesis and noema.",
+      "exposition": "Seeing a tree, remembering it and imagining it can all be directed toward what is nominally the same tree, but their act-character and mode of presentation differ. Noesis concerns the intentional lived act; noema concerns the intended object as meant, within its determinate sense and mode of givenness. The precise interpretation of noema is much disputed: it should not casually be identified with either a private image or a second object standing between consciousness and the tree.",
+      "advanced": "Interpretative debates over the noema contrast object-as-intended, intensional-content and transcendental perspectives. Claims of strict identity or separation between object and noema require careful qualification. Husserl’s analysis is dynamic and includes horizonal synthesis across manifold appearances.",
+      "scaffold": [
+        {
+          "title": "Directedness",
+          "body": "Experience is about or of something."
+        },
+        {
+          "title": "Noesis",
+          "body": "A meaningful intentional act, including its specific mode of intending."
+        },
+        {
+          "title": "Noema",
+          "body": "The object as intended, with its sense and mode of givenness."
+        }
+      ],
+      "vocabulary": [
+        "intentionality",
+        "noesis",
+        "noema",
+        "horizon",
+        "constitution"
+      ],
+      "argument": [
+        {
+          "title": "Variation",
+          "detail": "The same thing can be perceived, remembered or imagined.",
+          "kind": "premise"
+        },
+        {
+          "title": "Act analysis",
+          "detail": "These experiences differ in noetic character.",
+          "kind": "method"
+        },
+        {
+          "title": "Correlate",
+          "detail": "Their noematic senses articulate how the intentional object is given.",
+          "kind": "conclusion"
+        }
+      ],
+      "example": "Imagine a cathedral from memory and then see it in person. The target may be identical, while the experiential mode—remembering versus perceiving—differs radically.",
+      "critique": "The strongest challenge concerns whether noema is an intermediary representation or an interpretive articulation of world-directedness. Avoid assuming an answer.",
+      "comparison": "Brentano revives intentionality in modern philosophy; Heidegger questions subject-object formulations but retains directedness within worldly involvement.",
+      "seminar": "The central insight is not that mind manufactures a hidden picture. It is that each experience has a distinctive how of intending, and this how can be examined systematically.",
+      "debate": "Voice A: Noema creates a veil between subject and world. Voice B: The object-as-intended need not be a private object distinct from the worldly thing.",
+      "beats": [
+        {
+          "title": "The central question",
+          "content": "Consciousness is consciousness of something; Husserl analyzes the relation between intentional acts and their object-sense using the distinction between noesis and noema.",
+          "kind": "Orientation"
+        },
+        {
+          "title": "Variation",
+          "content": "The same thing can be perceived, remembered or imagined.",
+          "kind": "premise"
+        },
+        {
+          "title": "Act analysis",
+          "content": "These experiences differ in noetic character.",
+          "kind": "method"
+        },
+        {
+          "title": "Correlate",
+          "content": "Their noematic senses articulate how the intentional object is given.",
+          "kind": "conclusion"
+        },
+        {
+          "title": "Worked phenomenological demonstration",
+          "content": "Imagine a cathedral from memory and then see it in person. The target may be identical, while the experiential mode—remembering versus perceiving—differs radically.",
+          "kind": "Example"
+        },
+        {
+          "title": "Objections and qualifications",
+          "content": "The strongest challenge concerns whether noema is an intermediary representation or an interpretive articulation of world-directedness. Avoid assuming an answer.",
+          "kind": "Objection"
+        }
+      ],
+      "sourceNote": "Original interpretive study guide, not the copyrighted source text. Consult an authorized edition for exact wording and pagination. Section divisions and translations vary by edition."
+    },
+    {
+      "id": "mp01",
+      "workId": "merleau",
+      "section": "Preface",
+      "title": "What Is Phenomenology?",
+      "minutes": 24,
+      "tags": [
+        "embodiment",
+        "reduction",
+        "world"
+      ],
+      "synopsis": "Merleau-Ponty presents phenomenology as a philosophy of lived experience that returns to the world as experienced before theoretical reconstruction.",
+      "exposition": "The preface navigates between eidetic philosophy and descriptions of factical life. Phenomenology studies essences, yet the route to essences passes through existence. Reflection does not create the world it clarifies. Rather than a disembodied spectator, the philosopher is already situated in a historical, bodily, intersubjective world. The incompleteness of reduction is not simply a failure but a clue to our inescapable involvement.",
+      "advanced": "Merleau-Ponty criticizes any reading of reduction as complete detachment from the world and disputes both causal empiricism and constituting intellectualism. His phenomenology treats the pre-reflective as an irreducible field of sense, not a raw matter subsequently organized by an ego.",
+      "scaffold": [
+        {
+          "title": "Return to experience",
+          "body": "Describe how things show themselves before abstract explanation."
+        },
+        {
+          "title": "Embodied involvement",
+          "body": "Perception is an achievement of a situated living body."
+        },
+        {
+          "title": "Incomplete reduction",
+          "body": "The inability to exit the world entirely is philosophically significant."
+        }
+      ],
+      "vocabulary": [
+        "lived-body",
+        "lifeworld",
+        "reduction",
+        "pre-reflective",
+        "perception"
+      ],
+      "argument": [
+        {
+          "title": "Starting point",
+          "detail": "Experience is always already worldly and embodied.",
+          "kind": "premise"
+        },
+        {
+          "title": "Reflection",
+          "detail": "Any theoretical reduction occurs from within that engagement.",
+          "kind": "problem"
+        },
+        {
+          "title": "Phenomenology",
+          "detail": "Return to lived experience rather than pretend to replace it with pure construction.",
+          "kind": "conclusion"
+        }
+      ],
+      "example": "You navigate a room with a bodily sense of space without calculating distances as a detached geometric observer.",
+      "critique": "A critic can ask how phenomenological description distinguishes structural insight from anecdote, and how it relates to experimental accounts of perception.",
+      "comparison": "Husserl’s late work increasingly emphasizes lifeworld; Heidegger investigates situated being-in-the-world rather than a Cartesian spectator.",
+      "seminar": "Our body is not a mere item observed in space. It is the way a world is opened for us. To return to experience is to begin with this concrete fact.",
+      "debate": "Voice A: A full reduction frees us from the worldly standpoint. Voice B: Its very attempt reveals a situated subject who cannot wholly leave that standpoint.",
+      "beats": [
+        {
+          "title": "The central question",
+          "content": "Merleau-Ponty presents phenomenology as a philosophy of lived experience that returns to the world as experienced before theoretical reconstruction.",
+          "kind": "Orientation"
+        },
+        {
+          "title": "Starting point",
+          "content": "Experience is always already worldly and embodied.",
+          "kind": "premise"
+        },
+        {
+          "title": "Reflection",
+          "content": "Any theoretical reduction occurs from within that engagement.",
+          "kind": "problem"
+        },
+        {
+          "title": "Phenomenology",
+          "content": "Return to lived experience rather than pretend to replace it with pure construction.",
+          "kind": "conclusion"
+        },
+        {
+          "title": "Worked phenomenological demonstration",
+          "content": "You navigate a room with a bodily sense of space without calculating distances as a detached geometric observer.",
+          "kind": "Example"
+        },
+        {
+          "title": "Objections and qualifications",
+          "content": "A critic can ask how phenomenological description distinguishes structural insight from anecdote, and how it relates to experimental accounts of perception.",
+          "kind": "Objection"
+        }
+      ],
+      "sourceNote": "Original interpretive study guide, not the copyrighted source text. Consult an authorized edition for exact wording and pagination. Section divisions and translations vary by edition."
+    },
+    {
+      "id": "mp02",
+      "workId": "merleau",
+      "section": "Introduction I",
+      "title": "The Concept of Sensation",
+      "minutes": 22,
+      "tags": [
+        "sensation",
+        "perception",
+        "empiricism"
+      ],
+      "synopsis": "Perception cannot be constructed from isolated, self-contained sensations. What we encounter is an organized meaningful field, not an assemblage of atomized data.",
+      "exposition": "Merleau-Ponty criticizes the supposed elementary sensation as an abstraction projected back onto lived perception. We find figures against backgrounds; qualities acquire meaning in a context; relations are already operative in seeing. The empiricist starting point mistakes a theoretical artifact for the phenomenon it must explain.",
+      "advanced": "The criticism is not an empirical denial that receptors respond to stimulation. It contests an ontological and methodological claim: that an atomistic inventory of sensory elements is equivalent to the structure of perceived experience.",
+      "scaffold": [
+        {
+          "title": "Atomism",
+          "body": "Perception is allegedly made from independent units of sensation."
+        },
+        {
+          "title": "Gestalt",
+          "body": "Figure and ground belong to a structured field."
+        },
+        {
+          "title": "Primacy of perception",
+          "body": "Description must start from lived organization, not inferred atoms."
+        }
+      ],
+      "vocabulary": [
+        "sensation",
+        "gestalt",
+        "perception",
+        "lived-body"
+      ],
+      "argument": [
+        {
+          "title": "Target",
+          "detail": "Theories derive perception from discrete sensations.",
+          "kind": "premise"
+        },
+        {
+          "title": "Counterdescription",
+          "detail": "Ordinary perception presents holistic figure-ground organization.",
+          "kind": "objection"
+        },
+        {
+          "title": "Consequence",
+          "detail": "A theory of perception must account for structure from the beginning.",
+          "kind": "conclusion"
+        }
+      ],
+      "example": "A melody is heard as a phrase, not as meaningless tones that are only afterward combined by calculation.",
+      "critique": "A defender of neuroscience may grant gestalt experience while still modeling it through neural mechanisms; the phenomenological claim does not by itself adjudicate neural implementation.",
+      "comparison": "Gestalt psychology is a central influence, but Merleau-Ponty gives its experimental findings a wider philosophical interpretation.",
+      "seminar": "There are sensations in physiology; but are sensations, understood as isolated atoms, what we actually perceive? The difference matters.",
+      "debate": "Voice A: Every percept is built from elementary inputs. Voice B: Inputs may be causal conditions without being the phenomenal units of perception.",
+      "beats": [
+        {
+          "title": "The central question",
+          "content": "Perception cannot be constructed from isolated, self-contained sensations. What we encounter is an organized meaningful field, not an assemblage of atomized data.",
+          "kind": "Orientation"
+        },
+        {
+          "title": "Target",
+          "content": "Theories derive perception from discrete sensations.",
+          "kind": "premise"
+        },
+        {
+          "title": "Counterdescription",
+          "content": "Ordinary perception presents holistic figure-ground organization.",
+          "kind": "objection"
+        },
+        {
+          "title": "Consequence",
+          "content": "A theory of perception must account for structure from the beginning.",
+          "kind": "conclusion"
+        },
+        {
+          "title": "Worked phenomenological demonstration",
+          "content": "A melody is heard as a phrase, not as meaningless tones that are only afterward combined by calculation.",
+          "kind": "Example"
+        },
+        {
+          "title": "Objections and qualifications",
+          "content": "A defender of neuroscience may grant gestalt experience while still modeling it through neural mechanisms; the phenomenological claim does not by itself adjudicate neural implementation.",
+          "kind": "Objection"
+        }
+      ],
+      "sourceNote": "Original interpretive study guide, not the copyrighted source text. Consult an authorized edition for exact wording and pagination. Section divisions and translations vary by edition."
+    },
+    {
+      "id": "mp03",
+      "workId": "merleau",
+      "section": "Introduction II",
+      "title": "Association and the Projection of Memories",
+      "minutes": 23,
+      "tags": [
+        "memory",
+        "association",
+        "perception"
+      ],
+      "synopsis": "Associationist theories cannot adequately explain perceptual meaning by adding remembered ideas to meaningless sensory impressions.",
+      "exposition": "A perceived figure is not first given as arbitrary marks that memory labels from outside. The organization of the visual field conditions which associations are even plausible. Merleau-Ponty treats memory and association as dependent on a perceptual world already structured by significance and context.",
+      "advanced": "The explanatory circle of associationism appears when the cues that allegedly trigger memories must already be recognized as determinate cues. Perceptual sense cannot simply be deferred to a second process without explaining its own conditions.",
+      "scaffold": [
+        {
+          "title": "Associationism",
+          "body": "Current sensory contents allegedly call up associated past images."
+        },
+        {
+          "title": "Recognition",
+          "body": "To call up the correct memory, perception already has selective structure."
+        },
+        {
+          "title": "Meaning field",
+          "body": "Present experience is meaningful prior to a separate act of projection."
+        }
+      ],
+      "vocabulary": [
+        "perception",
+        "gestalt",
+        "horizon",
+        "sensation"
+      ],
+      "argument": [
+        {
+          "title": "Associationist thesis",
+          "detail": "Memory supplies meaning to otherwise meaningless sensation.",
+          "kind": "premise"
+        },
+        {
+          "title": "Selection problem",
+          "detail": "An appropriate memory can be selected only if the present has form.",
+          "kind": "problem"
+        },
+        {
+          "title": "Revision",
+          "detail": "Meaning arises in the structured perceptual field, not as a late attachment.",
+          "kind": "conclusion"
+        }
+      ],
+      "example": "An ambiguous drawing can be seen as a duck or rabbit. Background expectations matter, but the visual organization constrains what interpretations are possible.",
+      "critique": "Modern predictive-processing models complicate the polemic: prior information can modulate perception without literally treating sensation as meaningless atoms.",
+      "comparison": "Husserlian horizon-intentionality also emphasizes anticipatory structure, while Gestalt psychology explores intrinsic perceptual organization.",
+      "seminar": "Remembering affects how we see, but memory cannot create the very perceptual field that gives it an appropriate point of entry.",
+      "debate": "Voice A: Recognition is just an association. Voice B: Association presupposes a recognized pattern that differentiates relevant from irrelevant memories.",
+      "beats": [
+        {
+          "title": "The central question",
+          "content": "Associationist theories cannot adequately explain perceptual meaning by adding remembered ideas to meaningless sensory impressions.",
+          "kind": "Orientation"
+        },
+        {
+          "title": "Associationist thesis",
+          "content": "Memory supplies meaning to otherwise meaningless sensation.",
+          "kind": "premise"
+        },
+        {
+          "title": "Selection problem",
+          "content": "An appropriate memory can be selected only if the present has form.",
+          "kind": "problem"
+        },
+        {
+          "title": "Revision",
+          "content": "Meaning arises in the structured perceptual field, not as a late attachment.",
+          "kind": "conclusion"
+        },
+        {
+          "title": "Worked phenomenological demonstration",
+          "content": "An ambiguous drawing can be seen as a duck or rabbit. Background expectations matter, but the visual organization constrains what interpretations are possible.",
+          "kind": "Example"
+        },
+        {
+          "title": "Objections and qualifications",
+          "content": "Modern predictive-processing models complicate the polemic: prior information can modulate perception without literally treating sensation as meaningless atoms.",
+          "kind": "Objection"
+        }
+      ],
+      "sourceNote": "Original interpretive study guide, not the copyrighted source text. Consult an authorized edition for exact wording and pagination. Section divisions and translations vary by edition."
+    },
+    {
+      "id": "mp04",
+      "workId": "merleau",
+      "section": "Introduction III",
+      "title": "Attention and Judgment",
+      "minutes": 25,
+      "tags": [
+        "attention",
+        "judgment",
+        "experience"
+      ],
+      "synopsis": "Neither attention conceived as a spotlight nor judgment conceived as intellectual synthesis adequately explains the organization of experience.",
+      "exposition": "Merleau-Ponty criticizes the view that attention merely reveals preformed sensations and the opposing view that judgment supplies an entirely intellectual ordering. Attention transforms the phenomenal field and opens a new structure; perceptual sense is neither passively received nor fabricated by an isolated intellect. This makes perception a distinctive mode of embodied understanding.",
+      "advanced": "The argument targets a false alternative between passive material and constituting act. Attentive disclosure involves perceptual reorganization that cannot be captured by a simple addition of mental predicates to fixed stimuli.",
+      "scaffold": [
+        {
+          "title": "Attention",
+          "body": "An active reorientation of perceptual organization, not a neutral searchlight."
+        },
+        {
+          "title": "Judgment",
+          "body": "A propositional act cannot be presumed to generate every experiential relation."
+        },
+        {
+          "title": "Perceptual sense",
+          "body": "A bodily and worldly intelligibility prior to explicit judgment."
+        }
+      ],
+      "vocabulary": [
+        "attention",
+        "perception",
+        "lived-body",
+        "gestalt"
+      ],
+      "argument": [
+        {
+          "title": "Empiricist account",
+          "detail": "Attention reveals ready-made contents.",
+          "kind": "premise"
+        },
+        {
+          "title": "Intellectualist account",
+          "detail": "Judgment organizes otherwise formless contents.",
+          "kind": "premise"
+        },
+        {
+          "title": "Phenomenological correction",
+          "detail": "Attending is a transformation within meaningful perception.",
+          "kind": "conclusion"
+        }
+      ],
+      "example": "When searching a crowded shelf, the scene changes as a particular object becomes salient, even before an explicit proposition is formed about it.",
+      "critique": "One must distinguish description of the experience of attending from cognitive explanations of selective attention; they need not compete at the same level.",
+      "comparison": "Merleau-Ponty extends Gestalt insights and challenges Kantian-inspired accounts when they over-intellectualize synthesis.",
+      "seminar": "Attention is not simply more light poured onto already complete things. It changes the way the field is organized and the possibilities of seeing.",
+      "debate": "Voice A: Either the mind receives sensations or it judges them. Voice B: Both models may miss the distinctive dynamics of lived perception.",
+      "beats": [
+        {
+          "title": "The central question",
+          "content": "Neither attention conceived as a spotlight nor judgment conceived as intellectual synthesis adequately explains the organization of experience.",
+          "kind": "Orientation"
+        },
+        {
+          "title": "Empiricist account",
+          "content": "Attention reveals ready-made contents.",
+          "kind": "premise"
+        },
+        {
+          "title": "Intellectualist account",
+          "content": "Judgment organizes otherwise formless contents.",
+          "kind": "premise"
+        },
+        {
+          "title": "Phenomenological correction",
+          "content": "Attending is a transformation within meaningful perception.",
+          "kind": "conclusion"
+        },
+        {
+          "title": "Worked phenomenological demonstration",
+          "content": "When searching a crowded shelf, the scene changes as a particular object becomes salient, even before an explicit proposition is formed about it.",
+          "kind": "Example"
+        },
+        {
+          "title": "Objections and qualifications",
+          "content": "One must distinguish description of the experience of attending from cognitive explanations of selective attention; they need not compete at the same level.",
+          "kind": "Objection"
+        }
+      ],
+      "sourceNote": "Original interpretive study guide, not the copyrighted source text. Consult an authorized edition for exact wording and pagination. Section divisions and translations vary by edition."
+    }
+  ]
+}
